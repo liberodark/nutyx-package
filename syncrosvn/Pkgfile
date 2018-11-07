@@ -1,6 +1,6 @@
 # Depends on: openjdk
 
-description="Syncro SVN Client has been designed to offer powerful actions while keeping the interface as clean and simple as possible."
+description="Syncro SVN Client is a simple svn client."
 packager="liberodark"
 url="http://www.syncrosvnclient.com/"
 
