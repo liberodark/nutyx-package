@@ -1,4 +1,4 @@
-# Depends on:
+# Depends on: unzip
 
 description="A streaming music downloader"
 packager="liberodark"
@@ -10,7 +10,6 @@ version=1.9.4
 source=(https://www.dropbox.com/s/z7ox47axdtj13qo/SMLoadr-linux-x64_v${version}.zip)
 
 build() {
-  mkdir -p "PKG/usr/bin/"
-  mv "SMLoadr/SMLoadr-linux-x64" "PKG/usr/bin/smloadr"
-  chmod +x "${PKG}/usr/bin/smloadr"
+  install -vdm755 "$PKG/usr/bin/"
+  install -vm755 "SMLoadr/SMLoadr-linux-x64" "$PKG/usr/bin/smloadr"
 }
