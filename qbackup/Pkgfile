@@ -9,13 +9,13 @@ version=1.10.0.0
 
 run=(openjdk)
 
-source=(https://storage-dag.iijgio.com/qualeed/downloads/qbackup/qBackup-${version}.tar.gz $name.desktop $name.png)
+source=(https://github.com/liberodark/qBackup/releases/download/${version}/qBackup-${version}.tar.gz $name.desktop $name.png)
 
 build() {
 
 cd qBackup
 mkdir -p $PKG/opt/qbackup/
 cp -r "qBackup/."  $PKG/opt/qbackup/
-install -vDm644 $SRCDIR/$name.desktop $PKG/usr/share/applications/$name.desktop
-install -vDm644 $SRCDIR/$name.png $PKG/usr/share/pixmaps/$name.png
+install -vDm644 $SRC/$name.desktop $PKG/usr/share/applications/$name.desktop
+install -vDm644 $SRC/$name.png $PKG/usr/share/pixmaps/$name.png
 }
