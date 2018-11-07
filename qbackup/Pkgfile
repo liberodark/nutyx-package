@@ -15,7 +15,7 @@ build() {
 
 cd qBackup
 mkdir -p $PKG/opt/qbackup/
-cp -r qBackup*  $PKG/opt/qbackup/
+cp -r "qBackup/."  $PKG/opt/qbackup/
 install -vDm644 $SRCDIR/$name.desktop $PKG/usr/share/applications/$name.desktop
 install -vDm644 $SRCDIR/$name.png $PKG/usr/share/pixmaps/$name.png
 }
