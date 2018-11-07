@@ -1,0 +1,268 @@
+11000001:Device
+11000043:BSD Log Device
+12000002:Path
+12000004:Description
+12000005:Locale
+12000016:Debug Target Name USB
+12000019:Debug Bus Parameters
+1200001D:Debug Net Key
+12000030:Load Options String
+12000044:BSD Log Path
+1200004A:Font Path
+14000006:Inherited Objects
+14000008:Recovery Sequence
+15000007:Truncate Memory
+1500001A:Debug Host IP
+1500001B:Debug Net Port
+1500000C:First MB Policy
+1500000D:Relocate Phy Memory
+1500000E:Avoid Low Phy Memory
+15000011:Debug Type
+15000012:Debug Serial Port Addr
+15000013:Debug Serial Port
+15000014:Debug Baud Rate
+15000015:Debug 1394 Channel
+15000018:Debug Start Policy
+15000022:EMS Port
+15000023:EMS Baud Rate
+15000042:Key Ring Address
+15000047:Config Access Policy
+1500004B:Integrity Services
+1500004C:Volume (FVE) Band ID
+15000051:Initial Console Input
+15000052:Graphic Resolution
+15000065:Display Message
+15000066:Display Message Override
+1500006D:Boot UX Fade Frames
+15000073:Alias Win Key
+15000075:Perf Freq
+15000076:Secure Boot Raw Policy
+15000079:Boot UX Transision Time
+1500007D:Boot Error UX
+1500007F:Measured Boot Log Format
+15000081:Log Control
+16000009:Recovery Enabled
+1600000B:Bad Mem Access Allowed
+1600000F:Traditional KSeg
+16000010:Boot Debug Enabled
+16000017:No UMEX
+1600001C:Debug DHCP
+1600001E:VM
+16000020:Boot EMS
+16000031:Attempt Non BCD Start
+16000040:Advanced Options
+16000041:Options Edit
+16000045:Preserve Boot Stat
+16000046:Graphics Mode Disabled
+16000047:Config Access Policy
+16000048:No Integrity Checks
+16000049:Test Signing
+16000050:Extended Input
+16000053:Restart On Failure
+16000054:Highest Graphic Mode
+16000060:Isolated Exe Context
+16000067:No Boot UX Logo
+16000068:No Boot UX Text
+16000069:No Boot UX Progress
+1600006A:No Boot UX Fade
+1600006B:Boot UX Reserve Pool Dbg
+1600006C:Boot UX Disable
+1600006E:Boot UX Dump Stats
+1600006F:Boot UX Show Stats
+16000071:Multiboot System
+16000072:No Keyboard
+16000074:Boot Shutdown Disabled
+1600007A:Mobile Graphics
+1600007B:Force FIPS Crypto
+1600007E:Flight Signing
+1700000A:Bad Memory List
+17000077:Allowed in Mem Settings
+25000510:Charge Threshold
+25000AAA:Boot Flow
+26000202:Skip FFU Mode
+26000203:Force FFU Mode
+26000512:Off Mode Charging
+{bootmgr}{fwbootmgr}{any}{app}***
+21000022:BCD Device
+22000023:BCD File Path
+22000026:PW Override
+22000027:Pinpass Phrase Override
+22000040:FVE Recovery URL
+22000041:FVE Recovery Message
+23000003:Default
+23000006:Resume Object
+24000001:Display Order
+24000002:Boot Sequence
+24000010:Tool Display Order
+25000004:Timeout
+26000005:Resume
+26000020:Display Boot Menu
+26000021:No Error Display
+26000024:Horm Enabled
+26000025:HiberBoot
+26000028:Process Custom Actions First
+26000031:Persist Boot Sequence
+27000030:Custom Actions List
+{osloader}{any}{app}***
+21000001:OS Device
+21000138:IMC Device
+21000150:System Data Device
+22000002:System Root
+22000011:Kernel Path
+22000012:HAL Path
+22000013:Debug Transport
+22000053:EVStore
+220000F1:Hypervisor Path
+220000f9:Hypervisor Debug Bus Params
+22000110:Hypervisor Debug Net Key
+22000112:Hypervisor Product SKU Type
+22000117:Hypervisor Load Options
+2200012D:Kernel Bus Params
+22000132:Kernel Debug USB Target Name
+22000136:Kernel Debug Net Key
+22000137:IMC Hive Name
+22000140:MFG Mode
+23000003:Resume Object
+25000020:NX Policy
+25000021:PAE
+25000031:Remove Memory
+25000032:Increase User VA
+25000033:Performance Memory
+25000050:Cluster Mode Addressing
+25000052:Restrict APIC Cluster
+25000055:X2 APIC Policy
+25000061:Num CPU
+25000063:Config Flags (CPU)
+25000066:Group Size
+25000071:MSI
+25000072:PCI Express
+25000080:Safe Boot
+250000A6:TSC Sync Policy
+250000C0:Force Failure
+250000C1:Driver Load Failure Policy
+250000C2:Boot Menu Policy
+250000E0:Boot Status Policy
+250000F0:Hypervisor Launch Type
+250000F3:Hypervisor Debug Type
+250000F4:Hypervisor Debug Port Num
+250000F5:Hypervisor Debug Baud
+250000F6:Hypervisor Debug 1394 Channel
+250000F7:Boot Ux Policy
+250000FA:Hypervisor Num CPU
+250000FB:Hypervisor Root CPU Per Node
+250000FD:Hypervisor Debug Host IP
+250000FE:Hypervisor Debug Host Port
+250000FF:Hypervisor Debug Pages
+25000100:TPM Boot Entropy Policy
+25000113:Hypervisor Root CPU
+25000115:Hypervisor IOMMU Policy
+25000118:Hypervisor MSR Filter Policy
+25000119:Hypervisor MMIO NX Policy
+25000120:XSave Policy
+25000121:XSave Add Feature 0
+25000122:XSave Add Feature 1
+25000123:XSave Add Feature 2
+25000124:XSave Add Feature 3
+25000125:XSave Add Feature 4
+25000126:XSave Add Feature 5
+25000127:XSave Add Feature 6
+25000128:XSave Add Feature 7
+25000129:XSave Remove Feature
+2500012A:XSave CPU Mask
+2500012B:XSave Disable
+2500012C:Kernel Debug Type
+2500012E:Kernel Debug Address
+2500012F:Kernel Debug Port
+25000130:Claimed TPM Counter
+25000131:Kernel Debug 1394 Channel
+25000133:Kernel Debug Host IP
+25000134:Kernel Debug Net Port
+25000139:Kernel Debug BAUD Rate
+25000142:VSM Launch Type
+25000144:Hypervisor Enforced Code Integrity
+26000004:Stamp Disks
+26000010:Detect Hal and Kernel
+26000022:WinPE
+26000024:No Crash Auto Reboot
+26000025:Last Known Good Config
+26000026:OSL No Integrity Checks
+26000027:OSL Test Signing
+26000030:No Low Mem
+26000040:VGA Mode
+26000041:Quiet Boot
+26000042:No VESA
+26000043:No VGA Mode
+26000051:Use Physical Destination
+26000054:Use Legacy APIC Mode
+26000060:One CPU
+26000062:Max CPU
+26000064:Max Group
+26000065:Group Aware
+26000070:Use FW PCI Settings
+26000081:Safe Boot Alt Shell
+26000090:Boot Log Init
+26000091:SOS
+260000A0:Debug Kernel Enable
+260000A1:HAL Breakpoint
+260000A2:Use Platform Clock
+260000A3:Force Legacy Platform
+260000A4:Use Platform Tick
+260000A5:Disable Dynamic Tick
+260000B0:EMS
+260000C3:One Time Advanced Options
+260000C4:One Time Options Edit
+260000E1:Disable ELAM Drivers
+260000F2:Hypervisor Debug Enable
+260000F8:Hypervisor Disables LAT
+260000Fc:Hypervisor Use Large VTLB
+26000114:Hypervisor Debug DHCP
+26000116:HyperVisor Use VAPIC
+26000135:Kernel Debug DHCP
+26000141:Event Logging
+{resume}{any}{app}***
+21000001:File Device
+21000005:Assoicated OS Device
+22000002:File Path
+25000007:Boot UX
+25000008:Boot Menu Policy
+26000003:Custom Settings
+26000004:PAE
+26000006:Debug Option Enabled
+26000024:Horm Enabled
+{device}{any}***
+31000003:Ram Disk DI Device
+32000004:Ram Disk DI Path
+35000001:Ram Disk Image Offset
+35000002:Ram Disk TFTP Client Port
+35000005:RAM Disk Image Length
+35000007:RAM Disk TFTP Block Size
+35000008:RAM Disk TFTP Window Size
+36000006:RAM Disk Export as CD
+36000009:RAM Disk Multicast Enable
+3600000a:RAM Disk Multicast TFTP Fallback
+3600000b:RAM Disk TFTP Var Window
+{memdiag}{any}{app}***
+25000001:Pass Count
+25000002:Test Mix
+25000003:Fail Count
+25000004:Test To Fail
+25000005:Stride Fail Count
+25000006:Invc Fail Count
+25000007:MATS Failure Count
+25000008:RAND Failure Count
+25000009:Chckr Fail Count
+26000003:Cache Enabled (6.2+)
+26000004:Failures Enabled
+26000005:Cache Enable (6.1)
+{ntldr}{any}{app}***
+22000001:BPB String
+{osloader}{setupldr}{any}{app}***
+42000002:App Relative Path
+42000003:Ramdisk Device Relative Path
+45000001:Device Type
+46000004:Omit OS Loader Elements
+46000010:Recovery OS
+47000006:Elements to Migrate
+{startup}{any}{app}***
+26000001:PXE Soft Reboot
+22000002:PXE App Name

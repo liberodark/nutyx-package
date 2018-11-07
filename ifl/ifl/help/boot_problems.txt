@@ -1,0 +1,81 @@
+If you encounter problems (such as hanging) while booting the IFL Boot Disk,
+it is sometimes possible to work around the situation by entering a kernel
+boot parameter at the boot: prompt. The boot: prompt appears on the initial
+boot screen where the video mode options (usually 3) are displayed.
+
+The initial screen operates with a 5 second timeout. If no key is pressed 
+within 5 seconds, the default boot option <1> will boot automatically. To
+select a boot option other than <1>, enter that number within 5 seconds, and
+then press <Enter>. For example, to boot option <2>, type 2, and then press
+<Enter>.
+
+To specify a kernel boot parameter:
+ - type the number of the desired boot option within 5 seconds (1, 2, or 3)
+ - type a space
+ - type the kernel boot parameter
+ - press <Enter>
+
+Example: To boot option <1> with the boot parameter pci=nomsi:
+ - within 5 seconds, type 1, then a space
+ - type pci=nomsi
+ - press <Enter>
+
+Kernel boot parameters can also be specified permanently when building a 
+custom version of the boot media. This option appears on the IFL Boot Media 
+Settings menu when running makeISO/HDD/PXE. It also appears on the Restore 
+Disc Settings menu so that boot parameters can be specified separately for 
+the IFL disk and restore disk if needed. Boot parameters for the restore disk
+can also be specified from the running disk by choosing View/Change Restore 
+Disc settings from the main menu, and then choosing the Kernel Boot Parameters
+option.
+
+
+Some work arounds using kernel boot parameters that have worked for some
+users in specific situations are listed below:
+
+1. Dell Optiplex system hangs on boot. Try the pci=nomsi boot paramter:
+   boot: 1 pci=nomsi
+
+2. The system hangs on boot with a message similar to the following:
+   ACPI: Assume Root bridge [\_SB_.PCI]. Try the pci=nommconf boot parameter:
+   boot: 1 pci=nommconf
+
+3. The system hangs on boot with "interrupt lost" error message. Try the
+   acpi=off boot paramter:
+   boot: 1 acpi=off
+
+4. If a system with 4 GiB or more of RAM hangs on boot, try the '4gh' boot
+   option. This option has been added to the main boot menu screen as of 
+   boot disk version LBD220EN (IFL version 2.57).
+
+5. If a system has IEEE1394 support (FireWire), and you see a console message
+   e.g. "Disabling IRQ #10" during boot, or soon after boot, the 'irgpoll'
+   boot parameter will usually correct this. When this happens, you may also dev)
+   see very sluggish performance of USB 2 drives, or other similar symptoms.
+   boot: 1 irqpoll
+
+6. The system hangs at "Waiting for udev to complete". After a maximum time
+   of 3 minutes, udev will time out and should get by the hang. If this happens
+   frequently, run 'viewreport' from the console or terminal to create a report
+   file (report.txt), and email it to TeraByte Support (see instructions on 
+   initial console text screen).
+
+7. For GUI version: If the system hangs while starting, using, or exiting the
+   GUI desktop, you can try the alternate xserver (xfbdev) by using the
+   following boot parameters at the boot prompt on the initial boot screen:
+
+   boot: 1fb      (1280x1024 resolution)
+   boot: 2fb      (1024x768 resolution)
+   boot: 3fb      (800x600 resolution)
+   boot: 4fb      (640x480 resolution)
+
+   On some systems, the higher resolutions may not be available. In that case,
+   you will be prompted to choose from a list of available resolutions during
+   boot. The '4fb' parameter is one that should be available on almost any 
+   system as a last resort.
+
+If you encounter a boot problem not listed above, or the solution listed above
+does not work in your case, please report this to TeraByte Support. If the
+problem causes the boot to hang, include the last 1 or 2 messages on the screen
+before the hang occurs. If possible, also include system information such as 
+motherboard make and model.

@@ -1,0 +1,255 @@
+This file contains help items on various network-related topics:
+1. Mounting Samba or Windows network shares
+2. Mounting NFS network shares
+3. Using the ssh client to log into another computer
+4. Logging into the IFL disk from another computer (sshd)
+5. Displaying network information
+6. Using the ncftp FTP client
+
+Note: To prevent any attempt to bring up the network, the boot parameter
+'iflnet=0' can be entered at the boot prompt on the initial boot screen. 
+The following are examples of how to use it:
+
+For no network with 80x25 video mode:
+1 iflnet=0
+
+For no network with frame buffer video mode:
+2 iflnet=0
+
+
+
+1. Mounting Samba shares (or Windows shares): 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+As of version LBD205EN of the IFL Boot Disk, Windows/Samba network shares
+can be mounted by choosing the "Mount Network shares" option from the boot
+disk menu, and following the prompts. Network shares mounted via the menu 
+will be mounted using cifs (using mount.cifs) rather than smbfs. 
+
+While smbmount and smbfs are still supported on the boot disk, the Linux
+kernel now considers them deprecated, and will remove support for them in 
+a future kernel version.
+
+If you wish to mount shares manually with smbmount, the following is a 
+brief description of how to do that. For more complete information, please
+see the TeraByte KB article at the following link:
+http://www.terabyteunlimited.com/kb/idx.php/0/316/  
+
+The Samba tools included on the disk can be used to mount Windows/Samba 
+shares to save/restore images. The smbmount command is used for this, and 
+the command line syntax is as follows:
+
+smbmount //server/share /mnt [-o option1,option2...]
+
+Common smbmount options (specified after the -o):
+
+username=<username>      SMB username for the share
+password=<password>      SMB password for the share
+guest                    suppress password prompt if no password required
+credentials=<filename>   points to file containing username/password
+workgroup=<workgroup>    workgroup (or domain) for the server
+lfs                      support file sizes > 2 GB
+krb                      use kerberos (active directory)
+ro                       mount the share read only
+
+Note that when using more than one option after -o, a comma is used to
+separate the options. There should be NO SPACES before or after the comma.
+
+All smbmount options can be listed by typing 'smbmount' without parameters.
+Also, if a Linux system (distro) is available, the manual page for smbmount
+can be viewed by typing 'man smbmount' (the smbfs package must be installed).
+
+Mount Example 1:
+server=winxp
+share=drived
+not password protected
+smbmount //winxp/drived /mnt -o guest
+
+Mount Example 2:
+server=debian
+share=jd
+domain=abc.org
+user=jd
+password=123
+smbmount //debian/jd /mnt -o username=jd,password=123,workgroup=abc.org
+
+Once the smbmount command has executed without any error message, this 
+indicates that the mount was successful. The mount can be further verified 
+by running one or more of the following commands:
+
+df         lists mounted file systems
+mount      same as above, but in a different format
+ls /mnt    list files on the share (equivalent to DOS dir command)
+
+With a successful mount, the contents of the share will be available in the 
+directory used as the mount point (/mnt is the mount point in the 
+examples above). The /mnt directory already exists on the IFL boot disk, and
+is intended to be used as a mount point for network shares or hard drive 
+partitions.
+
+To create or restore an image to/from the share, use the Backup To File (OS)
+or the Restore From File (OS) option, and then navigate to the directory 
+being used as the mount point. 
+
+To unmount the share, use the smbumount command as follows:
+smbumount /mnt  (umount /mnt will also work)
+
+
+2. Mounting NFS network shares (NFS = network file system):  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Assuming an NFS server is available on the network, and you have permissions
+to access one or more shares, you can mount an NFS share as follows:
+
+mount -t nfs -o intr 192.168.2.2:/testnfs /mnt
+
+The following two command lines are equivalent to the one above:
+
+mount -t nfs 192.168.2.2:/testnfs /mnt -o intr
+mount.nfs 192.168.2.2:/testnfs /mnt -o intr
+
+When using the 'mount.nfs' form, the -o options must be at the end.
+
+192.168.2.2 is the IP address of the NFS server, /testnfs is the NFS share,
+and /mnt is the mount point. The -o intr is optional, but is generally 
+recommended. To unmount the share, use the standard umount command of
+umount /mnt. For more information on NFS, the following web site is a
+good resource: http://nfs.sourceforge.net/
+
+Once the mount command has been executed without any error message, this
+indicates that the mount was successful. The mount can be further verified 
+by running one or more of the following commands:
+
+df         lists mounted file systems
+mount      same as above, but in a different format
+ls /mnt    list files on the share (equivalent to DOS dir command)
+
+With a successful mount, the contents of the share will be available in the 
+directory used as the mount point (/mnt is the mount point in the examples 
+above). The /mnt directory already exists on the IFL boot disk, and is 
+intended to be used as a mount point for network shares or hard drive 
+partitions.
+
+To create or restore an image to/from the share, use the Backup To File (OS)
+or the Restore From File (OS) option, and then navigate to the directory 
+being used as the mount point. 
+
+To unmount the share, use the umount command as follows:
+umount /mnt
+
+
+3. Using the ssh client to log into another computer:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The IFL disk contains the ssh client program to allow logging into another
+computer. You can use either of the following commands:
+
+ssh -l username 192.168.2.2
+ssh username@192.168.2.2
+
+The two commands above are the same. Username is the user you are logging in
+as, and 192.168.2.2 is the IP address of the ssh server. Generally you will 
+need to specify the username unless you are logging in as root, which is 
+normally not allowed on most ssh servers. If a password is required to log
+in, you will be prompted for it.
+
+The first time each session that you connect to a given ssh server, you will
+be prompted by ssh to confirm that you really want to do this. This will 
+require that you type 'yes' to confirm.
+
+Once logged in, you will be at a command prompt. You can close the session
+by typing 'exit' at the prompt. 
+
+Typing just 'ssh' will give a summary of the ssh command line options. 
+
+
+4. Logging into the IFL disk from another computer (sshd):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The IFL Disk has an sshd server that, by default, is not started on boot. To
+manually start or stop sshd, use the commands 'start-sshd' and 'stop-sshd' 
+respectively. Once sshd is running, remote users can log into the IFL disk 
+as root with one of the following commands:
+
+To log into IFL console version:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ssh -l root 192.168.2.2
+ssh root@192.168.2.2
+
+
+To log into IFL GUI version:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ssh -X -l root 192.168.2.2
+ssh -X root@192.168.2.2
+
+
+Where 192.168.2.2 is the IP address of the IFL disk. You will be prompted 
+for the root password, which by default is 'ifl'. To end the session, type
+'exit' at the prompt. The IP address of the IFL disk can be determined by 
+using the command 'ifconfig' at the Linux prompt.
+
+The default behavior of NOT starting sshd automatically on boot can be 
+changed by creating a custom version of the IFL boot media. First uncomment
+the SSHD_START="yes" option in config.txt, and then build the custom version
+with makeISO/HDD/PXE.
+
+If you will have the sshd server running for long periods of time, it is
+suggested that the root password also be changed when creating the custom
+boot media. The makeISO/HDD/PXE scripts will offer this option while building
+the custom version. 
+
+Note that the root password can also be changed from the running disk by 
+using the 'passwd' command. However, since the IFL disk runs from RAM, a 
+password changed in this manner will not stick through a reboot.
+
+
+5. Displaying network information:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The following commands will display basic network information. This
+infomation is also available by running 'viewreport'
+
+ifconfig              -> display IP address (among other data)
+route                 -> display default route 
+cat /etc/resolv.conf  -> display name servers in use
+
+As of IFL Boot Disk version LBD214EN, you can also use the Network 
+Configuration menu item to display current network status, as well 
+as configure or reconfigure a network interface.
+
+6. Using the ncftp FTP client:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ncftp is actually a set of programs, but the most commonly used is the FTP
+client, which is ncftp. You can connect to an FTP site with a command like
+the following:
+   
+ncftp ftp.terabyteunlimited.com
+
+Optionally, you can start ncftp without connecting to a server by just 
+typing 'ncftp', and then using the 'open' command from the ncftp prompt to 
+connect. 
+
+ncftp
+open ftp.debian.org
+
+If an FTP site does not allow anonymous logins, you will be prompted for a 
+username and password. Once connected, you can see all available commands by
+typing '?'. The most commonly used commands will usually be some or all of 
+the following:
+
+   open <ftp-server>    -> open connection to ftp-server
+   close                -> close connection to server
+   ls (or ls -l)        -> list files on server
+   cd directory         -> change to directory on server
+   lcd directory        -> change to directory on client
+   pwd                  -> print working directory on server
+   lpwd                 -> print working directory on client
+   get filename         -> download filename from server
+   put filename         -> upload filename to server
+   exit                 -> exit ncftp program
+
+When you close a connection to a particular server for the first time, ncftp
+will ask if you want to save a bookmark. If you choose to save it, you can
+connect the next time by just typing 'open' from the ncftp prompt, and then
+choosing the bookmark you saved. You can also do this by just typing
+'ncftpbookmarks' from the Linux prompt.
+
+There are several other programs included in the ncftp program set. You can 
+get the list of them, by typing 'ncftp' (without pressing Enter), and then 
+pressing <Tab> twice. The documentation for the entire set of programs can 
+be found at this web site: http://www.ncftp.com/ncftp

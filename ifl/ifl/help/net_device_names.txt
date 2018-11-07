@@ -1,0 +1,7 @@
+As of IFL Boot Disk version LBD214EN, the NET_DEVICE_NAMES option is now
+configured from the Network Interface Settings menu item while running one
+of the Linux make scripts (makeISO, makeHDD, or makePXE) to create a custom
+version. 
+
+The feature is called Persistent Naming on the menu. The Help item available
+from the menu screen explains the feature, as well as how to configure it.

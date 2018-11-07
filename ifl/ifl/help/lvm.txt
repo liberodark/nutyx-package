@@ -1,0 +1,145 @@
+This file covers LVM (Linux Volume Manager) topics relevant to IFL and 
+the IFL Boot Disk. The file is divided into 2 main sections:
+
+Section 1: Working with LVM volumes on the IFL Boot Disk
+Section 2: Creating and restoring images of LVM volumes
+
+This document applies to any LVM type for use with IFL.  However, starting 
+with version 3.22, the TeraByte Drive Imaging suite directly supports 
+data-only backup/restore of LVM's that contain a single PV with logical
+volumes that consist of consecutive blocks within the LVM partition.  If
+spanned or striped logical volumes exist, the entire  LVM partition will 
+be backed up raw as were all LVM partitions prior to 3.22. 
+
+
+Section 1: Working with LVM volumes on the IFL Boot Disk:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+By default, the IFL boot disk will not activate any LVM volumes. LVM volumes 
+can always be activated manually from the running disk by using the command 
+'start-lvm' from the Linux prompt, and can then be deactivated by using the 
+command 'stop-lvm'. 
+
+Activating LVM volumes (if any exist on the system) will create a device file
+for each LVM volume in /dev/mapper. Those devices files can be viewed with the
+command 'ls -l /dev/mapper'. Once activated, LVM volumes can then be mounted 
+(assuming they contain a mountable file system) with commands such as:
+
+mount /dev/mapper/vg0-lvol0 /mnt  -> mount logical volume 0 in volume group 0
+mount /dev/mapper/vg0-lvol1 /mnt  -> mount logical volume 1 in volume group 0
+
+Note that before LVM volumes can be manually deactivated with the 'stop-lvm'
+command, any mounted LVM volumes must first be unmounted. This situation is
+handled automatically when rebooting or powering down.
+
+The IFL Boot Disk can be configured to automatically activate LVM volumes
+on boot. This feature is enabled by creating a custom version of the IFL boot 
+media with the makeISO/HDD/PXE scripts. The option to activate LVM will
+appear on the IFL Boot Media Settings menu, as well as on the Restore Disc
+Settings menu. With LVM Activation enabled, you will see a message to that 
+effect on boot, and it will not be necessary to manually activate LVM as 
+described above. However, the 'start-lvm' and 'stop-lvm' commands can still be
+used as needed.
+
+Note than when using makeHDD or makePXE to create a custom version, the /c
+option must be used. Otherwise, the script will create the default version of
+the IFL boot media, and the settings menu will not appear. The /c option is 
+not required when running makeISO, since that script always creates a custom
+version. 
+
+The complete LVM program is available on the IFL Boot Disk, so that commands 
+such as 'lvdisplay' and 'vgdisplay' can be used. All of the LVM programs can 
+be listed by typing 'lvm' at the prompt. For additional information on LVM, 
+please refer to the man pages available on any Linux system with LVM installed.
+The following web site may also be helpful: http://sourceware.org/lvm2
+
+As an example, one of the more useful LVM commands is 'lvdisplay', which will 
+list all detected LVM volumes on the system, with an output similar to the 
+following:
+
+ifl:/tbu# lvdisplay
+  --- Logical volume ---
+  LV Name                /dev/vg1/lvol0
+  VG Name                vg1
+  LV UUID                3UnE6T-ef0k-SaYe-C8ZX-D711-TRxy-vfJksa
+  LV Write Access        read/write
+  LV Status              available
+  # open                 0
+  LV Size                336.00 MB
+  Current LE             84
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+
+  --- Logical volume ---
+  LV Name                /dev/vg1/lvol1
+  VG Name                vg1
+  LV UUID                AwGwjm-ud2j-4ABE-lyvn-hPs3-k233-3ZJQ9r
+  LV Write Access        read/write
+  LV Status              available
+  # open                 0
+  LV Size                336.00 MB
+  Current LE             84
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:1
+
+Each section represents an LVM volume, and gives the size of each LVM, as 
+well as the volume group (vg1 in this case) that each LVM belongs to. The
+command 'blkid' can be used to display additional information about LVMs,
+such as the file system they are formatted with, the volume label, the 
+UUID, and the block device number.
+
+
+Section 2: Creating and restoring images of LVM volumes:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+IFL supports creating and restoring images to/from individual LVM volumes. 
+In addition, images created from LVM volumes can be restored to hard drive 
+partitions, and images created from partitions can be restored to LVM volumes
+(assuming they will fit). 
+
+Important: The support for LVMs in IFL is limited to creating and restoring 
+individual LVM volumes with the requirement that the underlying LVM structures
+(LVM volume groups, LVM physical volumes) already exist. To be able to do a 
+complete restore from scratch of a drive containing one or more  LVMs, you 
+would need to create an image of the entire hard drive, and then restore that
+image. 
+
+Once LVMs have been activated on the IFL Boot Disk, the IFL program will 
+recognize the LVM volumes as drives, and they will appear in the list of 
+drives that IFL displays (e.g. /dev/mapper/vg0-lvol0). LVMs are not 
+partitioned, but for imaging purposes, IFL will treat them as a drive with
+a single partition.
+
+Creating or restoring an image of an LVM to/from an LVM is done in the same
+way as you would create or restore an image of a hard drive partition
+to/from a hard drive. 
+
+Restoring an image of an LVM to a hard drive partition can be done by
+selecting ONLY the LVM volume itself to restore. In other words, make sure
+that the LVM "full drive" is not selected when you restore the image. From
+the command line, an example would look similar to the following:
+
+imagel --r --d:l2@0x1 --f:"/mnt/lvmimage.tbi" --sp:0x1 --vb 
+
+The command line above is restoring the specified image file to the 1st 
+partition on Linux drive 2 (--d:l2@0x1). The --sp:0x1 is telling IFL to
+restore ONLY the LVM volume itself, rather than the "full drive". The 
+--sp:0x1 indicates a single partition with partition ID=1. Images of LVMs
+will always contain just a single "partition".
+
+Restoring an image of a single partition to an LVM is done in the same
+manner as restoring it to a partiton.
+
+Restoring a single partition from a full drive image to an LVM can be done 
+by selecting ONLY that one partition to restore. From the command line, an 
+example would look similar to the following:
+
+imagel --r --d:l2@0x1 --f:"/tbu/sdbfulldrive" --sp:0x2 --vb
+
+The command above is restoring a single partition with ID=0x2 from the 
+specified full drive image file to Linux drive 2 (--d:l2@0x1), which is
+the LVM. Note that is restoring to the 1st "partition" in the LVM (0x1).

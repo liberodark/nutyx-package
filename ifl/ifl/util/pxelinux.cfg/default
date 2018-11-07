@@ -1,0 +1,20 @@
+timeout 50
+kbdmap qwerty.ktl
+prompt 1
+display menu.txt
+default 2
+label 1
+ kernel vmlinuz
+ append vga=794 switchx=yes iflkmap=us ktl=qwerty initrd=initrmfs.gz iflbflag=0  
+label 2
+ kernel vmlinuz
+ append vga=791 switchx=yes iflkmap=us ktl=qwerty initrd=initrmfs.gz iflbflag=0  
+label 3
+ kernel vmlinuz
+ append vga=788 switchx=yes iflkmap=us ktl=qwerty initrd=initrmfs.gz iflbflag=0  
+label 4
+ kernel vmlinuz
+ append vga=785 switchx=yes iflkmap=us ktl=qwerty initrd=initrmfs.gz iflbflag=0  
+label 4gh
+ kernel vmlinuz
+ append vga=791 switchx=yes mem=2G iflkmap=us ktl=qwerty initrd=initrmfs.gz iflbflag=0  

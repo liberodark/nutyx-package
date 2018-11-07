@@ -1,0 +1,126 @@
+## ---------------------------------------------------------------------------
+## Image for Linux Boot Disk Configuration File (for Network version only)
+## ---------------------------------------------------------------------------
+## This file allows you to change certain default values by uncommenting and
+## editing below. Note that there is no need to edit this file UNLESS you want 
+## to override the default values. When you build the disk, this file will 
+## always be included, and will be found in the /etc directory after booting. 
+## If left unedited, it will still be included, but will have no effect.
+
+## The lines below that start with a single '#' can be uncommented and edited
+## to override default values. To uncomment a line, just delete the '#' at the
+## beginning of the line. Lines beginning with a double '##' are descriptions
+## of the options, and should not be uncommented.
+
+## The options that have values enclosed in parenthesis can have more than one
+## value specified. To specify more than one value, list them inside the
+## parenthesis with a space between them. Example: XYZ=(value1 value2 value3) 
+
+## When creating the disk from Linux, the makeISO, makePXE, and makeHDD
+## scripts will present additional options to require a console login, and to 
+## change the root password from its default of 'ifl'. By default, no login
+## is required for the console, but is required when connecting via an SSH
+## session.
+## ---------------------------------------------------------------------------
+## The available options and their descriptions start below
+## ---------------------------------------------------------------------------
+
+
+## HARDWARECLOCK option: Uncomment ONLY if your hardware clock is set to UTC
+## Otherwise, it is assumed that your clock is set to local time (default)
+#HARDWARECLOCK="UTC"
+
+
+## TIMEZONE option: Uncomment and/or edit a value below to specify a timezone.
+## The timezone will otherwise be set to "UTC". On most Linux systems, you can
+## refer to the /usr/share/zoneinfo directory for valid timezones that you can 
+## specify in a format like the examples below.
+#TIMEZONE="US/Eastern"
+#TIMEZONE="US/Central"
+#TIMEZONE="US/Mountain"
+#TIMEZONE="US/Pacific"
+#TIMEZONE="US/Alaska"
+#TIMEZONE="US/Hawaii"
+
+#TIMEZONE="Europe/London"
+#TIMEZONE="Europe/Paris"
+#TIMEZONE="Europe/Berlin"
+#TIMEZONE="Europe/Moscow"
+#TIMEZONE="Europe/Rome"
+#TIMEZONE="Europe/Vienna"
+
+#TIMEZONE="Asia/Hong_Kong"
+#TIMEZONE="Asia/Shanghai"
+#TIMEZONE="Asia/Seoul"
+#TIMEZONE="Asia/Taipei"
+#TIMEZONE="Asia/Tokyo"
+
+
+## The KEYMAP and DEFAULT_VIDEO_MODE options are now selected when running
+## the makeISO, makeHDD, and makePXE scripts
+
+ 
+## HOSTNAME option: Uncomment and edit if you want to set the hostname to
+## something other than "ifl" (default)
+#HOSTNAME="ifl"
+
+
+## MODULES option: Uncomment and edit ONLY if you would like to explicitly
+## load any kernel modules first before modules are loaded automatically. 
+## An example of when this could be needed would be if you have 2 network 
+## cards and their modules are not getting loaded in the same order on every
+## boot. This can cause the card that you want to be assigned to eth0 to 
+## sometimes be assigned to eth1 instead. By default, no modules are loaded 
+## in this manner.
+#MODULES=(e100)
+
+
+## BLACKLIST option: Uncomments and edit to prevent udev from loading the
+## specified modules. By default, no modules are blacklisted.
+## Example: BLACKLIST(ahci pcnet32) will prevent udev from loading achi and pcnet32
+#BLACKLIST=()
+
+
+## RUNSCRIPTS option: Uncomment and edit ONLY if you would like to execute
+## one or more of the scripts in the scripts directory AUTOMATICALLY on boot.
+## When you uncomment this option, ONLY the scripts listed in parenthesis
+## below will be executed on boot. However, the entire scripts directory will
+## will ALWAYS be included on the disk, regardless of whether or not
+## you uncomment the option below. Once booted from the disk, you will
+## find a copy of the scripts directory in /tbu. 
+#RUNSCRIPTS=(script1 script2)
+
+
+## SSHD_START option: Uncomment ONLY if you want the sshd server started
+## automatically on boot. The default is that it will NOT be started up on 
+## boot. If sshd is running, remote users can login to the IFL disk via an 
+## ssh session. A user name and password are always required for an ssh 
+## login. By default, the root account and password are available.
+#SSHD_START="yes"
+
+
+## The LVM option can now be found on the settings menu when running
+## makeHDD, makeISO, or makePXE
+
+
+## ISCSI_START option: Uncomment to start the iscsi daemon automatically
+## at boot time. The default is no. 
+#ISCSI_START="yes"
+
+
+## SERIAL_PORTS option: Uncomment one of the 3 lines below to enable login on
+## COM1 only, COM2 only, or both. The default is that neither port is enabled.
+#SERIAL_PORTS=1		## COM1 only
+#SERIAL_PORTS=2		## COM2 only
+#SERIAL_PORTS=B		## Both
+
+
+## NET_DEVICE_NAMES option: This option is now configured from the network
+## inteface configuration menu when creating a custom version with makeISO,
+## makeHDD, or makePXE. The feature is called Persistent Naming on the menu.
+
+
+## NETWORK OPTIONS: All network options are now configured from the network
+## interface configuration menu when creating a custom version with makeISO,
+## makeHDD, or makePXE. This includes all wireless settings, as well as
+## ndiswrapper configuration. Network profiles are no longer used.

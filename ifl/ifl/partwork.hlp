@@ -1,0 +1,667 @@
+<P><a name="top"></a><CENTER><B>CONTENTS</B></CENTER></P>
+
+<P><a href="#PartWork">Working with Partitions</a></P>
+
+<P><a href="#Settings">Program Settings</a></P>
+
+<P><a href="#DriveSettings">Drive Settings</a></P>
+
+
+<P><A name="PartWork"></A><CENTER><B>Working with Partitions</B></CENTER><BR>
+</P><P>
+The Work With Partitions dialog is accessed via the Partition Work button<BR>
+on the desktop or the Partitions option on the Edit menu.<BR>
+</P><P>
+For more detailed information on working with partitions, please reference<BR>
+the manual.<BR>
+</P><P>
+Tip: F5 will return your keyboard focus to the list of partitions.<BR>
+</P><P>
+<B>Selecting a Drive</B><BR>
+</P><P>
+The drive is selected using the Drives drop-down box. The list shown may<BR>
+have generic drive names or it may include model numbers, depending on the<BR>
+access method in use and the details the program is able to obtain.<BR>
+</P><P>
+Use the Bus option to control the access method and select which type of<BR>
+drives are displayed. 
+</P><P>
+Below the Drives drop-down box, the Disk Type (MBR, EMBR, and GPT) is<BR>
+displayed, followed by the partitions and Free Space on the drive. The<BR>
+C H S values are displayed in the lower-left of the dialog.<BR>
+</P><P>
+</P><P>
+<B>Drive Settings</B><BR>
+</P><P>
+Click this button to select a hard drive and modify its individual<BR>
+settings.<BR>
+<a href="#DriveSettings">Click to view Drive Settings information.</a><BR>
+</P><P>
+</P><P>
+<B><A name="WipeDrive">Wipe Entire Drive</B><BR>
+</P><P>
+When the program wipes a hard drive, it overwrites the entire contents of the<BR>
+hard drive, with the sole intent of making the original data unrecoverable<BR>
+by any practical means.<BR>
+</P><P>
+Wiping is not the same as formatting. Formatting a hard drive does not<BR>
+securely overwrite the previous content of the drive, often leaving data<BR>
+recoverable by special means.<BR>
+</P><P>
+Generally, the "Random - 1 Pass + 1" wipe option should be sufficient for<BR>
+making the overwritten contents of the hard drive unrecoverable by software,<BR>
+while the "Random - 4 Pass + 1" option may provide a higher level of<BR>
+security.<BR>
+</P><P>
+After clicking the "Wipe Entire Drive" button, click the "Yes" button on the<BR>
+warning message to proceed.<BR>
+</P><P>
+The following wipe patterns are available for use:<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Random - 1 Pass + 1</B><BR>
+&nbsp;&nbsp;&nbsp;1 pass of strong random data, followed by 1 pass of zeros<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Random - 4 Pass + 1</B><BR>
+&nbsp;&nbsp;&nbsp;4 passes of strong random data, followed by 1 pass of zeros<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Pattern - PG MFM 28 Pass + 1</B><BR>
+&nbsp;&nbsp;&nbsp;29 passes, including specific patterns for MFM encoding<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Pattern - PG RLL(1,7) 26 Pass + 1</B><BR>
+&nbsp;&nbsp;&nbsp;27 passes, including specific patterns for RLL(1,7) encoding<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Pattern - PG RLL(2,7) 23 Pass + 1</B><BR>
+&nbsp;&nbsp;&nbsp;24 passes, including specific patterns for RLL(2,7) encoding<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Pattern - PG 35 Pass + 1</B><BR>
+&nbsp;&nbsp;&nbsp;36 passes, including specific patterns for MFM, RLL(1,7), and<BR>
+&nbsp;&nbsp;&nbsp;RLL(2,7) encoding<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Hardware</B><BR>
+&nbsp;&nbsp;&nbsp;Use the drives built-in enhanced secure erase feature if available.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>User Defined</B><BR>
+&nbsp;&nbsp;&nbsp;Specify the wipe pattern to use by entering the desired byte value(s).<BR>
+&nbsp;&nbsp;&nbsp;Multi-byte patterns can be specified by using the & character. To have<BR>
+&nbsp;&nbsp;&nbsp;multiple passes, separate the values with a space.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;Hexadecimal, octal, and decimal numbers can be used. Precede<BR>
+&nbsp;&nbsp;&nbsp;hexadecimal numbers with 0x (0x01, 0x0A, 0xA3, etc.), octal numbers<BR>
+&nbsp;&nbsp;&nbsp;with 0 (01, 012, 0243, etc.). Enter decimal numbers (1, 10, 163, etc.)<BR>
+&nbsp;&nbsp;&nbsp;as normal.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;To specify random repeating data, use the R character. For random <BR>
+&nbsp;&nbsp;&nbsp;non-repeating data, use the N character. For super-random non-repeating <BR>
+&nbsp;&nbsp;&nbsp;data (continual stir with noise), use the S character. Note: You cannot <BR>
+&nbsp;&nbsp;&nbsp;use any of the random number characters (R, N, S) in a multi-byte pattern.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;To validate the prior write pass, use the V character. Note: A <BR>
+&nbsp;&nbsp;&nbsp;super-random pass (S) can’t be validated.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;To specify a number to repeat for the remainder of the sector, use <BR>
+&nbsp;&nbsp;&nbsp;the > character. This option must be followed by a space or the end of the <BR>
+&nbsp;&nbsp;&nbsp;user defined string.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;Several examples are shown below:<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>0x01&0x02</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wipe using a two byte pattern of 1 and 2.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>0x01 0xFF</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wipe first pass using the value 1, followed by a second pass using the<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value 255.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>0x01 0x0A R 0x00</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wipe first pass using the value 1, a second pass using the value 10,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a third pass using random numbers, and a fourth pass using the value 0.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>23&32 010 0x7F</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wipe first pass using a two byte pattern of 23 and 32, a second pass of<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value 8, and a third pass using the value 127.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>0x55 0xAA R V</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DOD 5220.22-M compliant. Wipe first pass using the value 85, a second <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass of value 170, a third pass using random numbers, and a fourth pass <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to validate the third pass.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>0xFF 0 0x43</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DOD 5200.28-M compliant. Wipe first pass using the value 255, a second <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass of value 0, and a third pass of value 67.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>0xFF 0xFD&0xFF> N V</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NAVSO P-5239-26 (MFM) compliant. Wipe first pass using the value <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;255, a second pass using a multi-byte pattern (253, 255) with 255 <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repeating to end of each sector, a third pass using non-repeating <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;random data, and a fourth pass to validate the third pass.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>0xFF 0xE4&0xFF&0xFF&0xFF N V</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NAVSO P-5239-26 (RLL) compliant. Wipe first pass using the value <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;255, a second pass using a multi-byte pattern (228, 255, 255, 255), <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a third pass using non-repeating random data, and a fourth pass to <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validate the third pass.<BR>
+</P><P>
+The entropy source for the wipe can be either the system or generated by<BR>
+pressing random keys on the keyboard.<BR>
+</P><P>
+NOTE: Canceling the wipe operation will not recover any data that has been<BR>
+wiped up to that point!<BR>
+</P><P>
+For more information on wiping drives, please see the BootIt BM manual.<BR>
+</P><P>
+</P><P>
+<B>Change Disk Type</B><BR>
+</P><P>
+The program supports three different Disk Types and allows you to convert<BR>
+between them, thus changing the partitioning scheme in use on a particular<BR>
+drive. Note that there are some conversion limitations imposed due to<BR>
+their differences.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>MBR</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is the standard Disk Type used in most current systems. Each<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drive can contain a maximum of four primary partitions or less than<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;four and any number of volumes (logical partitions).<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>EMBR</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EMBR partitioning allows over 200 primary partitions to be created<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;on a drive. Up to four of these can be loaded into the MBR's<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;partition table for use by standard operating systems.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Special partition flags are not retained when converting to another<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>GPT</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The program supports GPT (GUID Partition Table) drives for<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;partitioning only - not booting. Up to 128 primary partitions can be<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;created.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Special partition flags are not retained when converting to another<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Warning: GPT disks are not appropriate for bootable disks on standard<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PCs. A GPT disk allows partitioning above 2TiB and should only be<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;created on a hard drive dedicated to data storage.<BR>
+</P><P>
+After performing a conversion, make sure to verify the partitions are<BR>
+correct and adjust any settings/flags as necessary.<BR>
+</P><P>
+</P><P>
+<B>View MBR</B><BR>
+</P><P>
+To view the contents of the MBR partition table or to make changes to the<BR>
+MBR, click View MBR.<BR>
+</P><P>
+Partitions currently loaded into the MBR are listed along with their sector<BR>
+details. The active partition is also indicated. The Disk Signature of the<BR>
+drive is displayed in the lower-left of the dialog. The Disk GUID, if<BR>
+any, is displayed in the dialog title.<BR>
+</P><P>
+The following options are available:<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Set Active</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Marks the selected partition (or slot) as active.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Insert</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Allows you to select which partition on the drive is loaded into the<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;selected slot.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Delete</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For MBR and GPT type drives, removes the selected partition from<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the partition table and the drive. The deletion takes place when Apply<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is clicked.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For EMBR type drives, the partition is removed from the MBR,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;but not deleted from the drive.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Move Up / Move Down</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Moves the selected partition one slot up or down in the partition table.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Std MBR</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes standard MBR code to the MBR. This is equivalent to using<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fixmbr from the XP Recovery Console or writing the MBR using FDISK.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Win7 MBR</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes a Windows 7 specific version of the MBR, which may be required<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for Windows 7 to boot on certain systems.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Clear Sig</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This option is used to clear the Windows NT Disk Signature (used by<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Windows 2000 and higher), which is needed for Windows to boot<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;correctly under several circumstances.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Edit Sig</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Allows entering a Disk Signature manually, as may be directed by a<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tech support specialist.<BR>
+</P><P>
+&nbsp;&nbsp;&nbsp;<B>Fill E-CHS</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fill E-CHS is used to force the ending CHS fields of all MBR<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;partition table entries to their max values which is useful for a<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch-22 situation when cylinder unaligned partitions exist and your<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BIOS does not properly implement or provide LBA mode support. This<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;can help if you're getting an error booting BootIt BM that reads<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"SPT < Minimum".<BR>
+</P><P>
+When finished making changes, click Apply to save them to the drive or<BR>
+Cancel to leave the MBR unchanged.<BR>
+</P><P>
+</P><P>
+<B>Partition Operations</B><BR>
+</P><P>
+The following sections detail the supported partition operations. Please<BR>
+note that there is an inherent risk in making partitioning changes. It is<BR>
+recommended to create a backup image if the data on the drive is of value.<BR>
+</P><P>
+<B>Create a partition or volume</B><BR>
+&nbsp;&nbsp;Select a Free Space entry and then click Create under Actions. Enter the<BR>
+&nbsp;&nbsp;name, select the file system and size, select any desired options, and<BR>
+&nbsp;&nbsp;then click OK.<BR>
+</P><P>
+&nbsp;&nbsp;The Format option is will only be available for supported file systems.<BR>
+</P><P>
+<B>Delete a partition or volume</B><BR>
+&nbsp;&nbsp;Select the partition or volume that you want to delete and then click<BR>
+&nbsp;&nbsp;Delete under Actions. Select any desired options and then click Yes.<BR>
+</P><P>
+&nbsp;&nbsp;Note that if the Clear Boot Sector option is used, the partition will<BR>
+&nbsp;&nbsp;not be able to be undeleted.<BR>
+</P><P>
+&nbsp;&nbsp;To clear all sectors in the partition with zeros, select the Wipe Partition<BR>
+&nbsp;&nbsp;checkbox. To use one of the standard wipe patterns or specify one of your<BR>
+&nbsp;&nbsp;own, select the Secure Wipe checkbox.<BR>
+&nbsp;&nbsp;<a href="#WipeDrive">Click for more details on the wipe options.<BR>
+</P><P>
+&nbsp;&nbsp;If the Bus option is set to BIOS (direct) and the drive supports TRIM <BR>
+&nbsp;&nbsp;you can select the Trim option. TRIM will be applied after all other <BR>
+&nbsp;&nbsp;specified options (e.g. wipe). Note that direct access to the drive is <BR>
+&nbsp;&nbsp;required. If BIOS (direct) is selected but reverts to BIOS mode you won't <BR>
+&nbsp;&nbsp;be able to use the Trim option.<BR>
+</P><P>
+<B>Undelete a partition or volume</B><BR>
+&nbsp;&nbsp;Select the Free Space entry that you want to undelete and then click<BR>
+&nbsp;&nbsp;Undelete under Actions. click OK to recover missing FAT, HPFS,<BR>
+&nbsp;&nbsp;NTFS, Ext2fs, ReiserFS, and Extended partitions or volumes.<BR>
+</P><P>
+&nbsp;&nbsp;If the partition or volume recovered is not correct, select it in the<BR>
+&nbsp;&nbsp;Partition list, click Delete, select the Clear Boot Sector checkbox,<BR>
+&nbsp;&nbsp;click Yes, and then repeat the undelete operation.<BR>
+</P><P>
+<B>Format a partition or volume</B><BR>
+&nbsp;&nbsp;select the partition or volume that you want to format, and then click<BR>
+&nbsp;&nbsp;Format under Actions. If the Format button is grayed out and<BR>
+&nbsp;&nbsp;unavailable, formatting is not supported for the selected partition's<BR>
+&nbsp;&nbsp;file system.<BR>
+</P><P>
+&nbsp;&nbsp;For FAT, FAT32 and NTFS partitions, you can suggest a cluster size.<BR>
+&nbsp;&nbsp;For FAT/FAT32, you can also select to align for NTFS conversion.<BR>
+</P><P>
+&nbsp;&nbsp;Click OK. The partition is formatted. FAT/FAT32 partitions will<BR>
+&nbsp;&nbsp;also be scanned for errors.<BR>
+</P><P>
+<B>Resize a partition or volume</B><BR>
+&nbsp;&nbsp;Select the partition or volume that you want to resize, and then click<BR>
+&nbsp;&nbsp;Resize under Actions. Click OK to error check the file system.<BR>
+</P><P>
+&nbsp;&nbsp;For a FAT or FAT32 partition, to convert from one file system to<BR>
+&nbsp;&nbsp;the other, select the desired file system and cluster size.<BR>
+</P><P>
+&nbsp;&nbsp;Enter the new partition size and click OK.<BR>
+</P><P>
+<B>Copy a partition or volume</B><BR>
+&nbsp;&nbsp;Select the partition or volume that you want to copy and then click<BR>
+&nbsp;&nbsp;Copy under Actions.<BR>
+</P><P>
+&nbsp;&nbsp;The "Paste Pending for Copy" message is displayed at the bottom of the<BR>
+&nbsp;&nbsp;Work with Partitions window.<BR>
+</P><P>
+&nbsp;&nbsp;In the Partitions list, click the Free Space entry where you want to<BR>
+&nbsp;&nbsp;paste the copied partition information and then click Paste under<BR>
+&nbsp;&nbsp;Actions. The Copy dialog box is displayed.<BR>
+</P><P>
+&nbsp;&nbsp;Enter the name for the copied partition and set any desired options.<BR>
+</P><P>
+&nbsp;&nbsp;Click OK.<BR>
+</P><P>
+<B>Slide a partition or volume</B><BR>
+&nbsp;&nbsp;Select the partition that you want to slide (or move in an adjacent<BR>
+&nbsp;&nbsp;Free Space), and then click Slide under Actions.<BR>
+</P><P>
+&nbsp;&nbsp;Adjust the Free Space Before and Free Space After values to move<BR>
+&nbsp;&nbsp;the partition to the desired location.<BR>
+</P><P>
+&nbsp;&nbsp;Click OK.<BR>
+</P><P>
+<B>Align a FAT/FAT32 partition</B><BR>
+&nbsp;&nbsp;The align operation is used to align the contents of a<BR>
+&nbsp;&nbsp;FAT/FAT32 partition so that conversion to NTFS results in<BR>
+&nbsp;&nbsp;cluster sizes that are more efficient.<BR>
+</P><P>
+&nbsp;&nbsp;Select the FAT/FAT32 partition that you want to align and then<BR>
+&nbsp;&nbsp;click Align under Actions.<BR>
+</P><P>
+&nbsp;&nbsp;Click Continue.<BR>
+</P><P>
+<B>View partition Properties</B><BR>
+&nbsp;&nbsp;Select the partition for which you want to see the properties and then<BR>
+&nbsp;&nbsp;click Properties under Actions. Note that the process of viewing<BR>
+&nbsp;&nbsp;partition properties also checks for some common partition errors. If any<BR>
+&nbsp;&nbsp;errors are found, you are either prompted with an option to fix them or a<BR>
+&nbsp;&nbsp;warning is displayed in the Properties dialog box.<BR>
+</P><P>
+&nbsp;&nbsp;In addition to viewing the partition's properties, you can also change the<BR>
+&nbsp;&nbsp;name, file system type, or hidden status. The partition GUID, if any,<BR>
+&nbsp;&nbsp;is displayed in the dialog title. The Flags section displays the<BR>
+&nbsp;&nbsp;partition's attributes and their current status. The attributes vary<BR>
+&nbsp;&nbsp;depending on the disk type (MBR, EMBR, GPT).<BR>
+</P><P>
+<B>  WARNING to Windows 8 Users</B><BR>
+&nbsp;&nbsp;If Windows 8 is installed on the partition and Fast startup is enabled,<BR>
+&nbsp;&nbsp;the Disable Fast Start button will be available. Fast startup must be<BR>
+&nbsp;&nbsp;disabled to prevent corruption of your partitions and data. Click the<BR>
+&nbsp;&nbsp;button to disable Fast startup and remove the current hibernated state.<BR>
+&nbsp;&nbsp;You will be prompted to confirm this action.<BR>
+</P><P>
+<B>BCD Edit</B><BR>
+&nbsp;&nbsp;This option allows you to easily edit the Windows BCD store used for<BR>
+&nbsp;&nbsp;booting newer versions of Windows (including Windows Vista and<BR>
+&nbsp;&nbsp;Windows 7).<BR>
+</P><P>
+&nbsp;&nbsp;Select the partition containing the BCD file that requires editing and<BR>
+&nbsp;&nbsp;then click BCD Edit under Actions.<BR>
+</P><P>
+&nbsp;&nbsp;Select the desired category and item and click Edit.<BR>
+</P><P>
+&nbsp;&nbsp;When finished making changes, click Close.<BR>
+</P><P>
+<B>Editing a File</B><BR>
+&nbsp;&nbsp;The program allows editing text files (up to 64K in size) on partitions<BR>
+&nbsp;&nbsp;using supported file systems. Using this option, it is easy to make<BR>
+&nbsp;&nbsp;corrections or modifications to files that may otherwise be inaccessible.<BR>
+</P><P>
+&nbsp;&nbsp;Select the partition containing the text file that requires editing and<BR>
+&nbsp;&nbsp;then click Edit File under Actions.<BR>
+</P><P>
+&nbsp;&nbsp;Note: If the file opened for editing is too large or a binary (non-text)<BR>
+&nbsp;&nbsp;file is opened, the file will be truncated and a message will be displayed.<BR>
+&nbsp;&nbsp;If this file is then saved, the truncated data will be lost.<BR>
+</P><P>
+<B>Applying TRIM</B><BR>
+&nbsp;&nbsp;The TRIM operation is used to notify the SSD drive of unused sectors within <BR>
+&nbsp;&nbsp;the selected partition area that it can use for itself.<BR>
+</P><P>
+&nbsp;&nbsp;Use the Bus drop-down to select BIOS (direct). In the Partitions list,<BR>
+&nbsp;&nbsp;select the partition or free space to which you wish to apply TRIM, then<BR>
+&nbsp;&nbsp;click Trim under Actions. Click Continue on the notice displayed and the<BR>
+&nbsp;&nbsp;TRIM procedure will run (progress will be displayed). Click Close when <BR>
+&nbsp;&nbsp;finished.<BR>
+</P><P>
+&nbsp;&nbsp;Note: Direct access to the drive is required. If BIOS (direct) is selected <BR>
+&nbsp;&nbsp;but reverts to BIOS mode you won't be able to use the TRIM option. <BR>
+&nbsp;&nbsp;Additionally, the drive must support TRIM.<BR>
+</P><P>
+<B>Working with Partition Groups</B><BR>
+&nbsp;&nbsp;Partition Groups are used in conjunction with the Multi-OS feature<BR>
+&nbsp;&nbsp;allowing certain files to be automatically replaced on Multi-OS setup.<BR>
+</P><P>
+&nbsp;&nbsp;Select the FAT/FAT32 partition to which you want to add or edit a<BR>
+&nbsp;&nbsp;group, then click Groups under Actions. A notice will be displayed if<BR>
+&nbsp;&nbsp;the Multi-OS option is not enabled for the selected partition.<BR>
+</P><P>
+&nbsp;&nbsp;Add or edit a group and then add the necessary operating system files<BR>
+&nbsp;&nbsp;along with their required options.<BR>
+</P><P>
+&nbsp;&nbsp;When finished, click OK.<BR>
+</P><P>
+</P>
+
+
+
+<P><a name="DriveSettings"></a><CENTER><B>Drive Settings</B></CENTER>
+</P><P>
+These options are available for each drive, allowing you to apply Global<BR>
+Settings or custom settings on a per drive basis.
+</P><P>
+Please reference the manual for more details on these options.
+</P><P>
+ <B>C H S</B><BR>
+&nbsp;&nbsp;&nbsp;This option is helpful when you need to specify geometry values that<BR>
+&nbsp;&nbsp;&nbsp;differ from those assigned by the operating environment. For example,<BR>
+&nbsp;&nbsp;&nbsp;you use this option when you attach a hard drive from another machine<BR>
+&nbsp;&nbsp;&nbsp;to the USB port of another machine to restore the first machine's backup<BR>
+&nbsp;&nbsp;&nbsp;image.
+</P><P>
+ <B>Use MBR Geometry</B><BR>
+&nbsp;&nbsp;&nbsp;Enable this option to prevent problems when a backup image of another<BR>
+&nbsp;&nbsp;&nbsp;system's drive is restored to a drive connected to a different system and<BR>
+&nbsp;&nbsp;&nbsp;the drive will be put back into the original system.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This option uses drive geometry based on the MBR entry of the first<BR>
+&nbsp;&nbsp;&nbsp;partition in the backup image file.
+</P><P>
+ <B>Validate MBR Geometry</B><BR>
+&nbsp;&nbsp;&nbsp;The option is used to ensure that the geometry from the MBR on the<BR>
+&nbsp;&nbsp;&nbsp;original system is aligned to known standards before accepting it for use.<BR>
+&nbsp;&nbsp;&nbsp;It only applies when the Use MBR Geometry option is enabled.
+</P><P>
+ <B>Use Original Geometry</B><BR>
+&nbsp;&nbsp;&nbsp;Enables the use of the drive geometry saved in the backup image that<BR>
+&nbsp;&nbsp;&nbsp;represents the geometry from the environment (Windows, Linux, or DOS)<BR>
+&nbsp;&nbsp;&nbsp;used to create the backup file. The saved drive geometry is used for the<BR>
+&nbsp;&nbsp;&nbsp;restored partition(s) instead of the geometry in use on the current<BR>
+&nbsp;&nbsp;&nbsp;system (which may differ).
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;It is generally recommended to try the Use MBR Geometry option first,<BR>
+&nbsp;&nbsp;&nbsp;which obtains the geometry from the MBR of the backup image.
+</P><P>
+ <B>Align on End:</B><BR>
+&nbsp;&nbsp;&nbsp;Use this option to ensure partitions are aligned at the end of a cylinder<BR>
+&nbsp;&nbsp;&nbsp;boundary.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This option should be disabled when the Align on 1MiB Boundaries <br />
+&nbsp;&nbsp;&nbsp;option is enabled.
+</P><P>
+ <B>Align End By Resizing</B><BR>
+&nbsp;&nbsp;&nbsp;Align both the beginning and end of a partition by resizing. If the<BR>
+&nbsp;&nbsp;&nbsp;partition being aligned is unable to be resized, this option has no affect.<BR>
+&nbsp;&nbsp;&nbsp;When disabled, the end of the partition is aligned normally.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This option has no affect if Align on End is disabled.
+</P>
+<P>
+ <B>Align on 1MiB Boundaries</B><BR>
+&nbsp;&nbsp;&nbsp;Align partitions based on 1MiB boundaries (drives  with 512 byte sectors <br />
+&nbsp;&nbsp;&nbsp;will be aligned on 2048 sectors; drives with 4096 byte  sectors will be <br />
+&nbsp;&nbsp;&nbsp;aligned on 256 sectors). </P>
+<P><BR>
+&nbsp;&nbsp;&nbsp;When enabling this option, you'll typically want to disable Align on End,<BR>
+&nbsp;&nbsp;&nbsp;enable Align MBR End HS and Align MBR HS When Truncated, and clear<BR>
+&nbsp;&nbsp;&nbsp;any values from the C H S boxes (set all to zero).
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;Configured this way, the options enable partition alignment using the<BR>
+&nbsp;&nbsp;&nbsp;Windows Vista and Windows 7 standard (note that you can also use the<BR>
+&nbsp;&nbsp;&nbsp;global option Align on 1MiB Boundaries and enable the Use Global <br />
+ &nbsp;&nbsp;&nbsp;Settings option for the drive).
+</P><P>
+ <B>Align MBR Ending HS</B><BR>
+&nbsp;&nbsp;&nbsp;Enable this option to force a partition's ending head and sector values<BR>
+&nbsp;&nbsp;&nbsp;in the MBR to match the current geometry (partition is created with the<BR>
+&nbsp;&nbsp;&nbsp;ending head and sectors set to the current geometry's max values).
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This option should be enabled when the Align on 1MiB Boundaries<br />
+&nbsp;&nbsp;&nbsp;option is enabled or Align on End is disabled and the BIOS does not <br />
+&nbsp;&nbsp;&nbsp;maintain LBA mode.
+</P><P>
+ <B>Align MBR HS When Truncated</B><BR>
+&nbsp;&nbsp;&nbsp;When enabled, sets a restored partition's head and sector values in the<BR>
+&nbsp;&nbsp;&nbsp;MBR to match the current geometry when it is located outside the range of<BR>
+&nbsp;&nbsp;&nbsp;the current geometry. When disabled, the actual ending head and sector<BR>
+&nbsp;&nbsp;&nbsp;values are used.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This option should be enabled when the Align on 1MiB Boundaries <br />
+&nbsp;&nbsp;&nbsp;option is enabled.
+</P><P>
+ <B>Use Global Settings</B><BR>
+&nbsp;&nbsp;&nbsp;Select this option to specify that the drive should use the Global Geometry<BR>
+&nbsp;&nbsp;&nbsp;and Alignment options. When selected, the displayed options are disabled<BR>
+&nbsp;&nbsp;&nbsp;and reflect the settings of the global options.
+</P><P>
+ <B>Save as Default</B><BR>
+&nbsp;&nbsp;&nbsp;Select this option to apply these settings the drive. Otherwise, the<BR>
+&nbsp;&nbsp;&nbsp;changes are temporary for this session only (the original values will be<BR>
+&nbsp;&nbsp;&nbsp;used the next time the program runs).
+</P><P>
+ <B>Limit Primaries</B><BR>
+&nbsp;&nbsp;&nbsp;This option provides an easy way to limit the number of primary partitions<BR>
+&nbsp;&nbsp;&nbsp;to four (when selected) or allow unlimited primary partitions (when<BR>
+&nbsp;&nbsp;&nbsp;unselected) for the selected drive.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;Note that changing the main Limit Primaries option in Settings will override<BR>
+&nbsp;&nbsp;&nbsp;this option.
+</P>
+
+
+<P><a name="Settings"><CENTER><B>Program Settings</B></CENTER>
+</P><P>
+<B>--==| General |==--</B>
+</P><P><BR>
+&nbsp;<B>Limit Primaries</B><BR>
+&nbsp;&nbsp;&nbsp;This option has a profound effect of how the program operates.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;Enabling this option limits your system to the normal maximum of four<BR>
+&nbsp;&nbsp;&nbsp;primary partitions per MBR/EMBR type drive. In this mode, you can<BR>
+&nbsp;&nbsp;&nbsp;continue to use other partitioning programs such as DISKPART, Windows<BR>
+&nbsp;&nbsp;&nbsp;Disk Management, FDISK, etc.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;If the Limit Primaries option is NOT enabled then you can have more than<BR>
+&nbsp;&nbsp;&nbsp;four primary partitions but you should NOT use any partitioning<BR>
+&nbsp;&nbsp;&nbsp;software except for this software or BootIt BM.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This option will be grayed out and disabled if any of your existing<BR>
+&nbsp;&nbsp;&nbsp;hard drives has more than four primary partitions.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This is a global option and can be overridden in each drive's individual<BR>
+&nbsp;&nbsp;&nbsp;settings. Note that changing the state of this option may change the state<BR>
+&nbsp;&nbsp;&nbsp;of the option for the individual drives.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;This option does not affect GPT type drives.
+</P><P><BR>
+&nbsp;<B>Use Volume Label</B><BR>
+&nbsp;&nbsp;&nbsp;Use the standard volume label of a FAT, FAT32, HPFS, or NTFS partition<BR>
+&nbsp;&nbsp;&nbsp;as the name of the partition when displayed. With this<BR>
+&nbsp;&nbsp;&nbsp;option enabled, the volume label (as you would see in Windows) is used<BR>
+&nbsp;&nbsp;&nbsp;to identify the partition instead of the name saved in the EMBR, which<BR>
+&nbsp;&nbsp;&nbsp;may be different.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;Renaming a FAT or FAT32 partition/volume with this option enabled<BR>
+&nbsp;&nbsp;&nbsp;will also change the volume label on the file system. For NTFS, the<BR>
+&nbsp;&nbsp;&nbsp;file system label can be changed, but cannot be created.
+</P><P><BR>
+&nbsp;<B>ISO8601 Date/Time</B><BR>
+&nbsp;&nbsp;&nbsp;Displays the date and time using the ISO8601 format: YYYY-MM-DD hh:mm
+</P><P><BR>
+&nbsp;<B>Completion Alarm</B><BR>
+&nbsp;&nbsp;&nbsp;Sounds an alarm when a Copy, Slide, Format, or Resize completes.
+</P><P><BR>
+&nbsp;<B>Full Partition List</B><BR>
+&nbsp;&nbsp;&nbsp;If enabled, the full list of partitions will be displayed when<BR>
+&nbsp;&nbsp;&nbsp;creating a new partition or volume and when view a partition's<BR>
+&nbsp;&nbsp;&nbsp;properties. Otherwise an abbreviated list is displayed.
+</P><P><BR>
+&nbsp;<B>Volume Sequence as ID</B><BR>
+&nbsp;&nbsp;&nbsp;When enabled, the ID numbers for volumes (logical partitions) are based on<BR>
+&nbsp;&nbsp;&nbsp;position instead of a random number. The ID is created when the partition<BR>
+&nbsp;&nbsp;&nbsp;is created (or detected, if create outside of the program).
+</P><P><BR>
+&nbsp;<B>Assume Original HD</B><BR>
+&nbsp;&nbsp;&nbsp;If you select this option, the Program will keep references to the<BR>
+&nbsp;&nbsp;&nbsp;source hard drive number intact within the partitions that have been<BR>
+&nbsp;&nbsp;&nbsp;restored to the target. If you do not select this option and the target<BR>
+&nbsp;&nbsp;&nbsp;drive number differs from that of the source drive, applicable drive<BR>
+&nbsp;&nbsp;&nbsp;references residing within the restored partitions will be updated to<BR>
+&nbsp;&nbsp;&nbsp;reflect the new hard drive number.
+</P><P><BR>
+&nbsp;<B>Use HD0 in FAT BPB</B><BR>
+&nbsp;&nbsp;&nbsp;Forces the BPB (BIOS Parameter Block) drive number to HD0 even when<BR>
+&nbsp;&nbsp;&nbsp;it's on another drive.
+</P><P><BR>
+&nbsp;<B>Resize with Caching</B><BR>
+&nbsp;&nbsp;&nbsp;When enabled (default), a cache will be used to reduce the time required <BR>
+&nbsp;&nbsp;&nbsp;to resize a partition.
+</P><P><BR>
+&nbsp;<B>Disable Fixups</B><BR>
+&nbsp;&nbsp;&nbsp;Disables additional processing that attempts to suppress the need to use<BR>
+&nbsp;&nbsp;&nbsp;Clear Sig after moving, sliding, or copying partitions used by<BR>
+&nbsp;&nbsp;&nbsp;Windows 2000 or later (includes XP, Vista, and Windows 7).
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;
+<B>--==| Global Geometry and Alignment |==--</B>
+</P><P>
+These options will be the default for all drives in the system that have the
+Use Global Settings options selected in Drive Settings. You can unselect
+Use Global Settings for a drive if you need to apply different options.
+</P><P>
+Please reference the manual for more details on these options.
+</P><P><BR>
+&nbsp;<B>Disable</B><BR>
+&nbsp;&nbsp;&nbsp;Disables the global geometry settings. The program will<BR>
+&nbsp;&nbsp;&nbsp;revert to using program defaults or drive specific overrides. For normal<BR>
+&nbsp;&nbsp;&nbsp;use, it is not recommended to disable Global Geometry.
+</P><P><BR>
+&nbsp;<B>Align on 1MIB Boundaries</B><BR>
+&nbsp;&nbsp;&nbsp;This option provides a convenient way to enable 1MiB  partition alignment<br />
+&nbsp;&nbsp;&nbsp;for all drives (drives with 512 byte sectors will be  aligned on 2048 sectors; <br />
+&nbsp;&nbsp;&nbsp;drives with 4096 byte sectors will be aligned on 256  sectors). When this <br />
+&nbsp;&nbsp;&nbsp;option is enabled, partition alignment will be configured  using the Windows <br />
+&nbsp;&nbsp;&nbsp;Vista and Windows 7 standard. This is popular with users of  SSD type <br />
+&nbsp;&nbsp;&nbsp;drives, which require this alignment for optimal performance. </P>
+<P><BR>
+&nbsp;&nbsp;&nbsp;GPT drives are aligned at 1MiB boundaries regardless of this option's <br />
+&nbsp;&nbsp;&nbsp;setting. </P><P><BR>
+&nbsp;&nbsp;&nbsp;Also see the Align on Cylinder option (below) as it affects this option.
+</P><P><BR>
+&nbsp;<B>Align on Cylinder</B><BR>
+&nbsp;&nbsp;&nbsp;This option is used in conjunction with Align on 1MiB Boundaries to <br />
+&nbsp;&nbsp;&nbsp;provide an easy way to auto determine alignment and to default a blank <br />
+&nbsp;&nbsp;&nbsp;drive to use either 1MiB alignment or cylinder alignment.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;The actual alignment method used on a drive depends on Align on 1MiB <BR>
+&nbsp;&nbsp;&nbsp;Boundaries and Align on Cylinder as well as the alignment of any existing <BR>
+&nbsp;&nbsp;&nbsp;partitions on the drive. Please reference the manual for more information.
+</P><P><BR>
+&nbsp;&nbsp;&nbsp;GPT drives are aligned at 1MiB boundaries regardless of this option's <br />
+&nbsp;&nbsp;&nbsp;setting. </P><P><BR>
+&nbsp;<B>Assume Same Target System</B><BR>
+&nbsp;&nbsp;&nbsp;Enable this option to prevent problems when a backup image created on<BR>
+&nbsp;&nbsp;&nbsp;another system is restored to a drive connected to a different system<BR>
+&nbsp;&nbsp;&nbsp;and drive will be put back into the original system. This option uses<BR>
+&nbsp;&nbsp;&nbsp;drive geometry based on the MBR entry of the first partition in the<BR>
+&nbsp;&nbsp;&nbsp;backup image file.
+</P><P><BR>
+&nbsp;<B>Validate Geometry Before Use</B><BR>
+&nbsp;&nbsp;&nbsp;The option is used to ensure that the geometry from the MBR on the<BR>
+&nbsp;&nbsp;&nbsp;original system is aligned to known standards before accepting it for use.<BR>
+&nbsp;&nbsp;&nbsp;It only applies when the Assume Same Target System option is enabled.
+</P><P><BR>
+&nbsp;<B>Align MBR for BIOS Auto Mode</B><BR>
+&nbsp;&nbsp;&nbsp;Enable this option to prevent problems with unaligned partitions on<BR>
+&nbsp;&nbsp;&nbsp;systems with their BIOS using Auto Mode. Many newer systems use<BR>
+&nbsp;&nbsp;&nbsp;Auto Mode by default, and some don't even have an option to turn<BR>
+&nbsp;&nbsp;&nbsp;it off.
+</P><P><BR>
+&nbsp;<B>Use Source Host Geometry</B><BR>
+&nbsp;&nbsp;&nbsp;Enables the use of the drive geometry saved in the backup image that<BR>
+&nbsp;&nbsp;&nbsp;represents the geometry from the environment (Windows, Linux, or DOS)<BR>
+&nbsp;&nbsp;&nbsp;used to create the backup file. The saved drive geometry is used for the<BR>
+&nbsp;&nbsp;&nbsp;restored partition(s) instead of the geometry in use on the current<BR>
+&nbsp;&nbsp;&nbsp;system (which may differ).
+</P><P><BR>
+&nbsp;<B>Use New Windows MBR</B><BR>
+&nbsp;&nbsp;&nbsp;Enable this option to have the program use Windows 7+ compatible MBR<BR>
+&nbsp;&nbsp;&nbsp;code as the standard MBR code. The Windows 7 compatible MBR code will<BR>
+&nbsp;&nbsp;&nbsp;be used any time the MBR code on a drive needs written or updated.
+</P><P><BR>
+&nbsp;<B>Drive Settings</B><BR>
+&nbsp;&nbsp;&nbsp;Click this button to select a hard drive and modify its individual<BR>
+&nbsp;&nbsp;&nbsp;settings.<BR>
+&nbsp;&nbsp;&nbsp;<a href="#DriveSettings">Click to view Drive Settings information.</a><BR>
+&nbsp;&nbsp;&nbsp;
+</P>
+

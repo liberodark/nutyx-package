@@ -1,0 +1,48 @@
+The IFL Boot Disk supports adding custom scripts to the disk, and optionally
+executing one or more of them automatically on boot. Using ths option requires
+creating a custom disk, which must be done from a Linux distribution. Please 
+refer to the file quickstart.txt to set up IFL on your Linux distribution, and
+also to the file readme.txt for additional information on creating a custom boot
+disk.
+
+From there, scripts can be included on the custom boot disk by following these
+steps:
+
+- place one or more Bash scripts in the scripts directory. 
+
+- it is not necessary to set permissions on the scripts - that will be taken 
+  care of automatically when the custom disk is created.
+
+- to execute one or more of the scripts automatically on boot, edit the
+  RUNSCRIPTS option in config.txt with the name(s) of the script(s) to be
+  executed. If more than one script is to be executed, the names must be
+  separated by a space inside the parenthesis. The scripts will be executed
+  in the order they are listed.
+
+- remember to uncomment the RUNSCRIPTS line when finished editing it
+
+- create the custom disk by running the makeISO, makeHDD, or makePXE script
+
+- for makeHDD and makePXE, the /c option must be used to create a custom
+  version. Otherwise the default version of the IFL boot disk will be created,
+  and it will not include the scripts. The makeISO, makeHDD, and makePXE
+  scripts are further documented in readme.txt.
+
+When the custom disk is booted from, the scripts directory will appear in the
+/tbu directory on the disk. All scripts placed in the scripts directory will be
+included in that directory, regardless of whether or not they are executed 
+automatically. Those that are not executed automatically can be executed
+manually with a command such as './scripts/myscript' to execute myscript.
+
+If one or more scripts are executed automatically, a log file named scripts.log
+will be created in the /tbu directory. The log file will list all scripts
+executed automtically on boot, and their exit status. 
+
+If a script does not execute as expected, the nano text editor is available to 
+view the script, and make changes for testing purposes. Since the IFL Network
+Disk runs from RAM, any changes made will not stick through a reboot. The disk
+will have to be recreated with the modified script in place in the scripts 
+directory. 
+
+An excellent resource on writing Bash scripts is available at the following
+link: http://tldp.org/LDP/Bash-Beginners-Guide/html/index.html

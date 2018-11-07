@@ -1,0 +1,337 @@
+Please see the KB article at the URL below for information on using the
+'iflbuild' script for this task:
+
+https://www.terabyteunlimited.com/kb/article.php?id=593
+
+
+File Contents:
+~~~~~~~~~~~~~~
+Introduction
+Requirements for a bootable IFL restore disc
+Linux software requirements to burn CD/DVD discs
+Setting up IFL to create restore discs from Linux
+Burning a DVD - the growisofs command line
+Burning a DVD - command line examples
+Burning a CD - the genisoimage and wodim command lines
+Burning a CD - command line examples
+Additional Information
+ - Running as normal user or as root
+ - Auto mounting of optical drives
+ - Setting up K3b to burn restore discs 
+ - Burning an IFL restore disc from Windows
+
+
+Introduction:
+~~~~~~~~~~~~~
+This file provides a description of how to create IFL restore discs on CD or
+DVD media from a Linux distribution (outside of the IFL program). Restore 
+discs created in this way can contain one or more TBI images that were 
+originally saved by IFL (or IFD/IFW) as files on a hard drive. 
+
+This procedure covers using the program 'growisofs' from the command line to 
+burn DVD restore discs, and 'wodim' (formerly called cdrecord) to burn CD 
+restore discs. Both programs rely on 'genisoimage' (mkisofs on older distros)
+to create the ISO image to burn to the disc. Since most/all GUI burner software
+applications are front ends for these programs, the information provided here 
+should be transferable to using a GUI application such as K3b (see additional
+information at the end of this file).
+
+While most users will prefer bootable restore discs, non-bootable restore 
+discs can also be created by using a simpler form of the command line.
+
+Note: For information on how to create bootable IFL restore discs from Windows
+using Windows burner software, please see the next section for requirements, 
+and the Additional Information section, item 4, at the end of the file.
+
+
+Requirements for a bootable IFL restore disc:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. IFL restore discs use the isolinux boot loader to make the disc bootable. 
+   The files required to use isolinux will be in the cdboot directory once 
+   the setup script has been executed on a Linux distribution. The following 
+   files in cdboot must be in the root of the CD/DVD:
+   
+       isolinux.bin
+       isolinux.cfg
+       menu.txt
+       vmlinuz
+       initrmfs.gz
+       *.ktl (all *.ktl files)
+
+   * There may be additional files in cdboot that are not listed above. Those 
+     files are not required, although it won't cause problems to include them.
+
+   * The cdboot directory will also appear in the /tbu directory on the IFL 
+     boot disk. To create an IFL restore disc from Windows, this directory
+     can be copied off the running disk and used by Windows burner software.
+     See additional information at the end of this file for more details.
+
+2. The file isolinux.bin is the boot image for isolinux. The burner software 
+   must specify isolinux.bin as the boot image, and it requires the following
+   settings:
+    - it is a "no emulation" boot image
+    - the boot load size is 4 sectors
+    - a boot info table is required. 
+
+3. The image file(s) must be in the root of the CD/DVD
+
+4. The TBI images to be burned must have been created with a max file size of
+   2 GiB or less to comply with the ISO9660 spec. Naturally, this 2 GiB limit
+   is only relevant for DVD discs, since the max file size for CD discs is 
+   already limited to (typically) 648 or 698 MiB by the media.
+
+Note: To create a non-bootable restore disc, requirements 1 & 2 do not apply.
+
+
+Linux software requirements to burn CD/DVD discs:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. For DVD discs, growisofs must be installed 
+
+2. For CD discs, wodim (cdrecord on older distros) must be installed
+
+3. For either, genisoimage (mkisofs on older distros) must be installed
+
+On many distributions, the growisofs program will be part of a package named
+dvd+rw-tools (Debian) or similar name, and that package will depend on the 
+package containing genisoimage or mkisofs. If you have a GUI burning 
+application such as K3b installed, all required software is likely to be 
+already installed.
+
+
+Setting up IFL to create restore discs from Linux:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Nothing special needs to be done beyond the normal procedure for setting up 
+IFL on a Linux distribution - as outlined in readme.txt (or quickstart.txt). 
+The key thing is that the setup script must be run in order to create and 
+set up the cdboot directory. The setup script will do this automatically. 
+The cdboot directory contains the files that will be needed to create a 
+bootable restore disc from the Linux distribution.
+
+Also note that the restore disc settings that can be selected from the setup
+script will apply to restore discs created outside of IFL, as well as those
+created directly from IFL. Those settings are for keyboard map, video mode,
+kernel boot parameters, LVM activation, and restore command line. So it is
+possible to customize the restore discs with those settings.
+
+
+Burning a DVD - the growisofs command line:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Once the IFL directory is set up and the cdboot directory exists, the following
+command lines can be executed to create either a bootable or non-bootable 
+restore disc. These commands should be executed **from the IFL directory** in a
+terminal window, such as xterm. 
+
+Bootable:
+growisofs -Z /dev/dvd -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ file1 file2 ...
+
+Non-bootable:
+growisofs -Z /dev/dvd -R -J file1 file2 ...
+
+Note: The / after cdboot (cdboot/) in the bootable command line does matter.
+
+The device specified after the -Z should be the DVD device that you are 
+burning to (e.g. /dev/scd0, /dev/scd1, etc.). For an explanation of the 
+other parameters used above, please refer to the man pages for both 
+growisofs and genisoimage (or mkisofs). Most are required due to the use
+of isolinux as the boot loader. 
+
+While not required, it can be useful to give the DVD a volume label for 
+easier identification. That can be done with the -V option (see example 1 
+below).
+
+
+Burning a DVD - command line examples:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Bootable restore disc with one image file
+   - image is a single file located at /home/user/myimage.tbi
+   - the image file is <= 2 GiB in size
+   - the DVD burner is /dev/scd0
+   - the volume label is set to "IFL Restore Disc"
+
+growisofs -Z /dev/scd0 -V "IFL Restore Disc" -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage.tbi
+
+Note that for the volume label, the quotes are only needed if there are 
+spaces in the name.
+
+2. Same as example 1, except restore disc is not bootable:
+
+growisofs -Z /dev/scd0 -V "IFL Restore Disc" -R -J /home/user/myimage.tbi
+
+
+3. Bootable restore disc with two image files
+   - image files are named myimage1.tbi and myimage2.tbi
+   - both images are single files located in /home/user directory
+   - both image files are <= 2 GiB in size
+   - the DVD burner is /dev/scd0
+
+growisofs -Z /dev/scd0 -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage1.tbi /home/user/myimage2.tbi
+
+
+4. Bootable restore disc with total image size > 2 GiB, but fits on one disc
+   - image split into files myimage.tbi and myimage.1 
+   - both files located in /home/user directory
+   - both files <= 2 GiB in size
+   - the DVD burner is /dev/scd0
+
+growisofs -Z /dev/scd0 -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage.tbi /home/user/myimage.1
+
+
+5. Bootable restore disc with total image size requiring two DVD discs
+   - image split into myimage.tbi, myimage.1, myimage.2, myimage.3
+   - all files located in /home/user directory
+   - all files <= 2 GiB in size
+   - DVD burner is /dev/scd0
+
+growisofs -Z /dev/scd0 -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage.tbi /home/user/myimage.1
+growisofs -Z /dev/scd0 -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage.2 /home/user/myimage.3
+
+To make the 2nd disc non-bootable:
+growisofs -Z /dev/scd0 -R -J /home/user/myimage.2 /home/user/myimage.3
+
+
+Burning a CD - the genisoimage and wodim command lines:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Burning a CD from the Linux command line can involve up to 3 separate commands
+if the media needs to be erased (blanked) first. The 3 commands are:
+
+1. Create the ISO file with genisoimage (or mkisofs on older distros)
+
+Bootable:
+genisoimage -o restore.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ file 1 file2 ...
+
+Non-bootable:
+genisoimage -o restore.iso -R -J file1 file2 ...
+
+Both command lines above will create the file restore.iso. The name of the ISO
+file is specified with the -o option. While not required, it can be useful to
+give the CD a volume label for easier identification. That can be done with the
+-V option (see example 1 below).
+
+2. Blank the media with wodim (for CD-RW media)
+wodim blank=fast dev=/dev/cd
+
+3. Burn the ISO file to the CD media with wodim
+wodim -v -eject dev=/dev/cd restore.iso
+
+The -v option increases the verbosity of the output, and -eject will eject the
+disc on completion. Neither is required. The device to burn to is specified 
+with the dev= parameter (e.g. dev=/dev/scd0, dev=/dev/scd1, etc.).
+
+It is also possible to pipe the output of genisoimage into wodim, so that 
+the tasks of creating the ISO file and burning it to disc can be combined 
+into one command, and the ISO file will not be created on disk. Please see 
+the wodim man page's examples section for additional details. 
+
+
+Burning a CD - command line examples:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Bootable restore disc with one image file
+   - image is a single file located at /home/user/myimage.tbi
+   - the image will fit on a single CD disc
+   - the CD burner is /dev/scd0
+   - the volume label is set to "IFL Restore Disc"
+
+genisoimage -o restore.iso -V "IFL Restore Disc" -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage.tbi
+wodim blank=fast dev=/dev/scd0 (for CD-RW media)
+wodim -v -eject dev=/dev/scd0 restore.iso
+
+Note that for the volume label, the quotes are only needed if there are 
+spaces in the name.
+
+
+2. Same as example 1, except restore disc is not bootable:
+
+genisoimage -o restore.iso -V "IFL Restore Disc" /home/user/myimage.tbi
+wodim blank=fast dev=/dev/scd0 (for CD-RW media)
+wodim -v -eject dev=/dev/scd0 restore.iso
+
+
+3. Bootable restore disc with two image files
+   - image files are named myimage1.tbi and myimage2.tbi
+   - both images are single files located in /home/user directory
+   - the two image files will fit on one disc
+   - the CD burner is /dev/scd0
+
+genisoimage -o restore.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage1.tbi /home/user/myimage2.tbi
+wodim blank=fast dev=/dev/scd0 (for CD-RW media)
+wodim -v -eject dev=/dev/scd0 restore.iso
+
+
+4. Bootable restore disc with total image size requiring two CD discs
+   - image split into myimage.tbi and myimage.1
+   - both files located in /home/user directory
+   - each file will fit on a single disc
+   - CD burner is /dev/scd0
+
+genisoimage -o restore1.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage.tbi
+wodim blank=fast dev=/dev/scd0 (for CD-RW media)
+wodim -v -eject dev=/dev/scd0 restore1.iso
+
+genisoimage -o restore2.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J cdboot/ /home/user/myimage.1
+wodim blank=fast dev=/dev/scd0 (for CD-RW media)
+wodim -v -eject dev=/dev/scd0 restore2.iso
+
+
+Additional Information:
+~~~~~~~~~~~~~~~~~~~~~~~
+1. Running as normal user or as root - the growisofs command can usually be 
+run as a normal user, provided that user has read/write access to the CD/DVD 
+burner to be used. Usually this means that the user must belong to the 
+'cdrom' group, which is specified in the file /etc/group. The name of the 
+group and permissions configuration can vary among distributions.
+
+
+2. Auto mounting of optical drives - for best results when burning a CD/DVD, 
+it is suggested to configure your Linux desktop (Gnome, KDE, etc.) to NOT 
+automatically mount an optical disc when it is inserted. Automatic mounting 
+will likely interfere with the burning process, and may cause failures. In 
+addition, the CD/DVD should NOT be mounted when starting the burn.
+
+
+3. Setting up K3b to burn restore discs - K3b should be set up by choosing 
+"New Data DVD Project" or "New Data CD Project" from the File menu, or by 
+selecting that task on the K3b startup screen. From there:
+
+ - add all files in cdboot directory except isolunux.bin to the root of the 
+   CD/DVD
+
+ - add the image files to be burned to the root of the CD/DVD. If an image is 
+   split among two or more files, each of those files must be added (not 
+   just the TBI file). 
+
+ - click on the "Edit the boot images..." icon and add isolinux.bin as the 
+   boot image. Specify "None" for emulation type. Under Advanced options, 
+   check Boot-info-table, and set Boot load size to 0x4. 
+
+ - click on the Burn icon, which will bring up a dialog with several 
+   additional settings. Under the Settings tab, it is suggested to choose 
+   No MultiSession. Under the Volume desc tab you can set the volume label. 
+   On the Writing tab you can choose to verify the write. All other settings
+   can be left at K3b defaults.
+
+ - Click on to start the burn to CD/DVD. 
+
+The above is based on K3b version 0.12.17. Older/newer versions may vary in 
+the details of selecting the options. 
+
+
+4. Burning an IFL restore disc from Windows - the cdboot directory mentioned
+above (required to create a bootable IFL restore disc) will not be available 
+when extracting the IFL zip archive in Windows. To work around this, the
+following can be done:
+
+ - boot from the IFL boot disk
+
+ - if desired, configure the restore disc settings from the main menu
+
+ - mount a partition (or drive) that will be accessible from Windows
+
+ - copy the cdboot directory to that partition using this command:
+   
+   cp -a /tbu/cdboot /mnt  (assumes partition is mounted at /mnt) 
+
+Both NTFS and FAT/FAT32 partitions (or USB flash drives) can be mounted from
+the IFL boot disk. Please refer to the file drives_partitions_fs.txt in the
+help directory for help with mounting drives and partitions. The same
+information is also included in the help file that can be viewed from the 
+boot disk menu.

@@ -1,0 +1,203 @@
+Booting the IFL boot disk from a network boot using the PXELINUX boot loader
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note: The documentation file for PXELINUX itself (pxelinux.doc) is also
+included in the help directory.
+
+This is a summary of how to set up a network boot using the pxelinux network
+boot loader, which is a derivative of syslinux. Additional information on
+pxelinux can be found at the syslinux web site ( http://syslinux.zytor.com ).
+When booted in this manner, the IFL boot disk will work exactly the same as
+when booted from CD/DVD media, or from a hard drive partition. 
+
+Doing this will require the following:
+1. A system BIOS and network adapter that support network booting. 
+2. A DHCP server on your network configured to point to a TFTP server.
+3. A TFTP server on your network to serve the IFL files to the client.
+
+The DHCP and TFTP servers can reside on the same physical machine, although 
+that is not a requirement. In order to work with pxelinux, the TFTP server 
+is currently required to support the "tsize" option, which not all TFTP servers
+do. One TFTP server available for Linux that supports this option is atpftd 
+(advanced tftp daemon), and it is packaged for Debian and its derivatives, as
+well as for other Linux distributions.
+
+A brief summary of the steps required are listed below, followed by a more
+detailed description of each step:
+1. Configure the IFL disk (optional)
+2. Run the makePXE script
+3. Set up the TFTP server and copy the required files to it
+4. Set up the DHCP server (or modify an existing setup)
+
+
+1. Configure the IFL disk the same as you would for creating a CD/DVD by:
+   a. editing config.txt (optional)
+   b. editing ifl.ini (optional)
+   c. setting up the scripts directory (optional)
+   d. setting up the wireless directory (optional)
+   e. setting up the iscsi directory (optional)
+   
+   Note: This entire step can be skipped if you just want to create a set of
+   PXE files based on the default configuration (iflnet.iso), rather than a
+   customized version. 
+   
+2. Run the makePXE script as described in the readme.txt file. The makePXE 
+   script can create the PXE files based on either the default configuration,
+   or a custom version as configured in step 1 above:
+   
+   ./makePXE      -> create PXE files based on the default configuration
+   ./makePXE /c   -> create custom version based on changes made in step 1
+   
+   When the /c option is used, makePXE will also present the IFL Boot Media
+   Settings menu from which several options (keyboard, video, etc.) are 
+   available to customize the IFL disk, as well as the restore discs it 
+   creates. In addition, the options for requiring a console login and changing
+   the defaut password are presented. All options can be left at their defaults
+   by just pressing <Enter>. At its completion, the pxe directory will be 
+   created (if it doesn't already exist from a previous run), and all files
+   required for PXE boot will be in that directory. 
+
+   Those files are as follows:
+   
+   pxelinux.cfg	(directory)
+   pxelinux.cfg/default
+   pxelinux.0
+   menu.txt
+   initrmfs.gz
+   vmlinuz
+   qwerty.ktl
+   azerty.ktl
+   dvorak.ktl
+   qwertz.ktl
+   fgGIod.ktl
+
+   These files will need to be copied to the TFTP server once that is set up.
+    
+3. Set up the TFTP server and copy the required files to it
+
+   This step will depend on which TFTP server you use, but in general it will
+   consist of installing the server and then populating its working directory
+   with the files needed to launch pxelinux and boot IFL. As already mentioned
+   the TFTP server needs to support the "tsize" option, or it will not work
+   with pxelinux. One TFTP server available for Linux that supports this
+   option is atpftd (advanced tftp daemon). The atftpd server is packaged for 
+   Debian and its derivatives, as well as for other Linux distributions.
+
+   The minimum set of files that the TFTP server requires are listed in step
+   2 above. These files need to be in the TFTP server's working directory,
+   which often is at /tftpboot, although it can be at another location 
+   depending on the server and its configuration.
+   
+   To summarize, if your TFTP working directory is at /tftpboot, here is an 
+   example of what that directory is required to look like for the most basic
+   setup possible:
+
+   /tftpboot/:
+   -r--r--r--  1 root root      256 Feb 16 14:40 azerty.ktl
+   -r--r--r--  1 root root      256 Feb 16 14:40 dvorak.ktl
+   -r--r--r--  1 root root      256 Feb 16 14:40 fgGIod.ktl
+   -r--r--r--  1 root root 14479378 May  9 13:59 initrmfs.gz
+   -r--r--r--  1 root root      218 Mar  5 09:55 menu.txt
+   -rw-r--r--  1 root root    13324 Sep 28  2006 pxelinux.0
+   drwxr-xr-x  2 root root     4096 Jul 31  2006 pxelinux.cfg
+   -r--r--r--  1 root root      256 Feb 20 12:40 qwerty.ktl
+   -r--r--r--  1 root root      256 Feb 20 12:40 qwertz.ktl
+   -r--r--r--  1 root root  1542640 May  7 10:31 vmlinuz
+
+   /tftpboot/pxelinux.cfg:
+   -r--r--r--  1 root root 297 May  9 13:59 default
+   
+   The above only describes the most basic set up possible. For example,
+   when the pxelinux.cfg directory contains only the 'default' config file, 
+   the IFL boot disk will boot from ANY network-boot-capable machine on your 
+   network. Since this may not be desirable, please refer to the pxelinux 
+   documentation, as well as their web site, for information on more advanced
+   configurations.
+
+4. Set up the DHCP server. In order for the TFTP server to serve the IFL files
+   over to the client machine, a DHCP server must be configured to:
+
+   a. assign an initial IP address to the client on boot
+
+   b. tell the client where the TFTP server is located (its IP address)
+
+   c. tell the client the path/filename for the pxelinux boot loader on the 
+      TFTP server.
+
+   These items are typically specified in the configuration file for the DHCP 
+   server. The details will, of course, vary depending on which DHCP server is
+   used. The example below shows a minimal config file (dhcpd.conf) for dhcpd,
+   which is a DHCP server commonly used on Linux systems.
+
+   subnet 192.168.2.0 netmask 255.255.255.0 {
+     range 192.168.2.150 192.168.2.199;
+     default-lease-time 86400;
+     max-lease-time 86400;
+     option routers 192.168.2.1;
+     option ip-forwarding off;
+     option broadcast-address 192.168.2.255;
+     option subnet-mask 255.255.255.0;
+     option domain-name-servers 167.206.251.17, 167.206.251.18, 167.206.251.81;
+     next-server 192.168.2.2;
+     filename "/tftpboot/pxelinux.0";
+   }
+
+   Without the last 2 lines (next-server and filename), this would just be a
+   standard DHCP server config that would assign a dynamic IP address in the
+   range of 150 to 199 to DHCP clients on the 192.168.2.0 subnet. It also will
+   supply the clients with the default route and dns server IP addresses.
+
+   It will still do all of the above for DHCP clients, but the addition of the
+   "next-server" and "filename" lines will cause it to supply network boot 
+   clients with the IP address of the TFTP server (next-server), and the
+   path/filename of the pxelinux boot loader on the TFTP server (filename). 
+   
+   The network boot client will use the "next-server" IP address to connect 
+   with the TFTP server. Note that the TFTP server and DHCP server can reside 
+   on the same machine, and therefore have the same IP address. However, the 
+   TFTP server IP address must still always be specified.
+
+   The entire sequence of events for the network boot (as configured above) 
+   can be summarized as follows:
+   
+   1. Client is booted with network boot option selected
+   2. Client contacts the DHCP server and requests an initial IP address
+   3. DHCP server supplies the client with:
+      - the intitial IP address for the client
+      - the TFTP server IP address (next-server)
+      - the path/filename for the boot loader on the TFTP server (filename) 
+   4. Client contacts TFTP server and requests boot loader file (pxelinux.0)
+   5. Client receives and executes pxelinux.0
+   6. Pxelinux requests its config file (pxelinux.cfg/default in this case)
+   7. Based on config file, pxelinux requests menu.txt and displays boot menu
+   8. When boot delay times out (or user presses Enter), pxelinux requests 
+      Linux kernel (vmlinuz), and then the compressed rootfs (initrmfs.gz).
+   9. Pxelinux boots the kernel, and the boot proceeds normally from there.
+    
+
+Additional information: 
+~~~~~~~~~~~~~~~~~~~~~~~
+For the sake of clarity, the above information describes the requirements in 
+probably the most basic way that it could be implemented. The setup can be fine
+tuned, for example, to boot a different configuration of the IFL boot disk 
+depending on which machine (based on MAC address) it is booted from. Or it 
+could be configured to prevent booting IFL from certain machines etc. 
+
+The following is a list of information sources that you can refer to in
+order to modify or improve on the very basic configuration described above:
+
+  a. The syslinux/pxelinux web site:  http://syslinux.zytor.com/pxe.php
+     This web page contains several links to additional information, as well 
+     as explanations and examples of how to use pxelinux.
+
+  b. The pxelinux.doc and syslinux.doc files are in the help directory. This is
+     the documentation for pxelinux and syslinux. There will also be a man page
+     for syslinux (but not for pxelinux) on any Linux distro where the syslinux
+     package has been installed.
+
+  c. http://www.linuxfocus.org/English/September1998/article63.shtml
+     This is an old article, but gives a good, basic explanation of network
+     booting.
+
+  d. http://frank.harvard.edu/~coldwell/diskless/ is another article related
+     to network booting

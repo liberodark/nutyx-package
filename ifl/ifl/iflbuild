@@ -1,0 +1,1688 @@
+#! /bin/bash
+
+getziplist() {
+    # get list of IFL zip files in /tbu directory (if any)
+    nzips=0
+    for zipfile in ifl_en.zip ifl_en_gui.zip ifl_en_trial.zip ifl_en_gui_trial.zip ifl_en_x64.zip ifl_en_gui_x64.zip
+    do
+	if [ -f /tbu/$zipfile ]; then
+	    let nzips=nzips+1
+	    ziparray[$nzips]=$zipfile
+	    if [ "$zipfile" = "ifl_en.zip" ]; then ziparraytext[$nzips]="IFL_CUI_Registered"; ziparraymenutext[$nzips]="IFL (CUI) Registered"; fi
+	    if [ "$zipfile" = "ifl_en_gui.zip" ]; then ziparraytext[$nzips]="IFL_GUI_Registered"; ziparraymenutext[$nzips]="IFL (GUI) Registered"; fi
+	    if [ "$zipfile" = "ifl_en_trial.zip" ]; then ziparraytext[$nzips]="IFL_CUI_Unregistered"; ziparraymenutext[$nzips]="IFL (CUI) Unregistered"; fi
+	    if [ "$zipfile" = "ifl_en_gui_trial.zip" ]; then ziparraytext[$nzips]="IFL_GUI_Unregistered"; ziparraymenutext[$nzips]="IFL (GUI) Unregistered"; fi
+	    if [ "$zipfile" = "ifl_en_x64.zip" ]; then ziparraytext[$nzips]="IFL_CUI_Registered_X64"; ziparraymenutext[$nzips]="IFL (CUI) Registered X64"; fi
+	    if [ "$zipfile" = "ifl_en_gui_x64.zip" ]; then ziparraytext[$nzips]="IFL_GUI_Registered_X64"; ziparraymenutext[$nzips]="IFL (GUI) Registered X64"; fi
+	fi
+    done
+    ziplist=""
+    if [ "$nzips" != "0" ]; then
+	for i in `seq 1 $nzips`
+	do
+	    ziplist="$ziplist${ziparray[$i]} ${ziparraytext[$i]} "
+	done
+    fi
+}
+
+fixzipnames() {
+    if [ -f /tbu/IFL_EN.ZIP ]; then mv /tbu/IFL_EN.ZIP /tbu/ifl_en.zip; fi
+    if [ -f /tbu/IFL_EN_GUI.ZIP ]; then mv /tbu/IFL_EN_GUI.ZIP /tbu/ifl_en_gui.zip; fi
+    if [ -f /tbu/IFL_EN_TRIAL.ZIP ]; then mv /tbu/IFL_EN_TRIAL.ZIP /tbu/ifl_en_trial.zip; fi
+    if [ -f /tbu/IFL_EN_GUI_TRIAL.ZIP ]; then mv /tbu/IFL_EN_GUI_TRIAL.ZIP /tbu/ifl_en_gui_trial.zip; fi
+    if [ -f /tbu/IFL_EN_X64.ZIP ]; then mv /tbu/IFL_EN_X64.ZIP /tbu/ifl_en_x64.zip; fi
+    if [ -f /tbu/IFL_EN_GUI_X64.ZIP ]; then mv /tbu/IFL_EN_GUI_X64.ZIP /tbu/ifl_en_gui_x64.zip; fi
+}
+
+retrieve_zip_files() {
+while [ 0 ]; do
+    if [ -f /tbu/utility/iflnet ]; then
+	$dialogpath --no-shadow --title  "Retrieve Zip Files" --menu "\nUse the tools provided below to locate and copy an IFL zip file (or files) to the /tbu directory.\n\nFor example, if the zip file is located on a partition, you can mount the partition, and then copy the file over to /tbu with one of the file managers. Or you could use TeraByte Explorer by itself to access (internally mount) the partition, and then copy the file over.\n\nNote that partitions mounted with 'Mount drive or partition' will be mounted at /tbu/mnt1, /tbu/mnt2, etc., while network shares will be mounted at /tbu/net1, /tbu/net2, etc. Supported zip files are ifl_en.zip, ifl_en_gui.zip, ifl_en_trial.zip, and ifl_en_gui_trial.zip (and x64).\n \n" 25 78 5 \
+	"Exit Menu" "" \
+	"Use TeraByte Explorer file manager" "" \
+	"Use Midnight Commander file manager" "" \
+	"Mount drive or partition" "" \
+	"Mount network shares" "" 2> /tmp/ZFINDmselect
+    else
+	$dialogpath --no-shadow --title  "Retrieve Zip Files" --menu "\nUse the tools provided below to locate and copy an IFL zip file (or files) to the /tbu directory.\n\nFor example, if the zip file is located on a partition, you can mount the partition, and then copy the file over to /tbu with one of the file managers. Or you could use TeraByte Explorer by itself to access (internally mount) the partition, and then copy the file over.\n\nNote that partitions mounted with 'Mount drive or partition' will be mounted at /tbu/mnt1, /tbu/mnt2, etc. Supported zip files are ifl_en.zip, ifl_en_gui.zip, ifl_en_trial.zip, and ifl_en_gui_trial.zip (and x64).\n \n" 24 78 4 \
+	"Exit Menu" "" \
+	"Use TeraByte Explorer file manager" "" \
+	"Use Midnight Commander file manager" "" \
+	"Mount drive or partition" "" 2> /tmp/ZFINDmselect
+    fi
+    if [ ! "$?" = "0" ]; then 
+	rm -f /tmp/ZFINDmselect 2> /dev/null
+	break
+    fi
+    ZFINDmselect=`cat /tmp/ZFINDmselect`
+    rm /tmp/ZFINDmselect 2> /dev/null
+
+    if [ "$ZFINDmselect" = "Exit Menu" ]; then
+	break
+    elif [ "$ZFINDmselect" = "Use TeraByte Explorer file manager" ]; then
+	tbexplorer
+    elif [ "$ZFINDmselect" = "Use Midnight Commander file manager" ]; then
+	mc /tbu /tbu
+    elif [ "$ZFINDmselect" = "Mount drive or partition" ]; then
+	/usr/bin/dpmount
+    elif [ "$ZFINDmselect" = "Mount network shares" ]; then
+	if [ -f /usr/bin/sharemount ]; then /usr/bin/sharemount; fi
+    fi
+    fixzipnames
+done
+}
+
+
+tbexplorer() {
+    $dialogpath --no-shadow --title "Retrieve IFL Zip Files" --msgbox "\nPressing <Enter> will start the TeraByte Explorer script. The opening screen \
+lists files in the current directory (/tbu). To copy one or more zip files from a drive/partition to /tbu:\n\n\
+* highlight {Mount/Unmount a drive path identifier}, press <Enter>\n\
+* highlight drive/partition where zip file(s) are located, press <Enter>\n\
+* if necessary, navigate to the directory containing the zip file(s)\n\
+* highlight each file to be copied, press <SpaceBar> to select it\n\
+* when all files selected, press <Ctrl+C> to select copy file mode\n\
+* highlight the {Linux file system} item, press <Enter>\n\
+* ensure highlight bar is in upper portion of the screen (/tbu)\n\
+* press <Ctrl+V> to paste the selected file(s) into /tbu\n\
+* press <Esc>, then choose to exit TeraByte Explorer\n\n\
+Supported IFL zip files are: ifl_en.zip, ifl_en_gui.zip, ifl_en_trial.zip, and ifl_en_gui_trial.zip (and x64). Note that both network and non-network versions of the boot media \
+can be created with all supported zip files.\n\n \
+                         Press <Enter> to continue" 25 78 2> /dev/null
+    if [ ! "$?" = "0" ]; then return; fi
+
+    clear
+    cd /tbu
+    tbosdt tbexplo.tbs
+}
+
+selectzipfile() {
+
+    $dialogpath --no-shadow --title  "Select IFL Zip File" --menu "\nSelect an IFL zip file from the list below. The zip file will be automatically \
+extracted to /tbu/iflbuild, and will replace any previous zip file contents already there.\n\nOnce extracted, the 'setup' script will run automatically \
+to prepare the /tbu/iflbuild directory for creating boot media. If this is a registered version, you will be prompted for the IFL product key during setup. \n \n" 20 70 3 \
+    "Exit Menu" "" \
+    $ziplist  2> /tmp/ZIPselect
+    if [ ! $? = 0 ]; then
+	rm -f /tmp/ZIPselect 2> /dev/null
+	return
+    fi
+
+    ZIPselect=`cat /tmp/ZIPselect`
+    rm /tmp/ZIPselect 2> /dev/null
+
+    if [ "$ZIPselect" = "Exit Menu" ]; then return 0; fi
+    cd /tbu/iflbuild
+    rm -r * 2> /dev/null
+    $dialogpath --no-shadow --infobox "         Extracting contents of zip file to /tbu/iflbuild..." 3 70 2> /dev/null
+    unzip -o /tbu/$ZIPselect > /dev/null 2>&1
+    echo $ZIPselect > /tbu/iflbuild/currentzipfile
+    $dialogpath --no-shadow --title "Run Setup Script" --msgbox "\nPress <Enter> to run the IFL setup script. Doing this will set up the /tbu/iflbuid directory with the files and directories needed to create IFL boot media.\n\nIf this is the registered version, you will be prompted for your IFL product key during setup.\n\n                Press <Enter> to continue" 14 60 2> /dev/null
+    ./setup
+    echo "[OPTIONS]" > /tbu/iflbuild/ifl-custom.ini
+    echo "Press <Enter> to continue"
+    read xyz
+    cd /tbu
+}
+
+checkextracted_running() {
+    zipextracted=1
+    for i in setup makeISO makeHDD iflnet.iso ifl.iso util config.txt currentzipfile
+    do
+	if [ ! -e /tbu/iflbuild/$i ]; then
+	    zipextracted=0
+	    currentzipfile=""
+	    break
+	fi
+    done
+
+    langfilefinish=".zip"
+    if [ "$zipextracted" = "1" ]; then
+	currentzipfile=`cat /tbu/iflbuild/currentzipfile`
+	while [ 0 ]; do
+	    if [ "$currentzipfile" = "ifl_en.zip" ]; then
+		langfilefinish=".zip"
+		break
+	    elif [ "$currentzipfile" = "ifl_en_gui.zip" ]; then
+		langfilefinish="_gui.zip"
+		break
+	    elif [ "$currentzipfile" = "ifl_en_trial.zip" ]; then
+		langfilefinish="_trial.zip"
+		break
+	    elif [ "$currentzipfile" = "ifl_en_gui_trial.zip" ]; then
+		langfilefinish="_gui_trial.zip"
+		break
+	    elif [ "$currentzipfile" = "ifl_en_x64.zip" ]; then
+		langfilefinish=".zip"
+		break
+	    elif [ "$currentzipfile" = "ifl_en_gui_x64.zip" ]; then
+		langfilefinish="_gui.zip"
+		break
+	    else
+		zipextracted=0
+		currentzipfile=""
+		break
+	    fi
+	done
+    fi
+
+    # copy language zip files into iflbuild folder
+    if [ "$zipextracted" = "1" ]; then
+	while read line
+	do
+	    if [ -f /tbu/ifl_${line:0:2}$langfilefinish ]; then
+		cp /tbu/ifl_${line:0:2}$langfilefinish /tbu/iflbuild
+	    fi
+	done < "/tbu/utility/lang-versions"
+    fi
+
+    if [ "$zipextracted" = "0" ]; then
+	mkdir -p /tbu/iflbuild-saveiso
+	mv /tbu/iflbuild/*.iso /tbu/iflbuild-saveiso/ 2> /dev/null
+	cd /tbu/iflbuild
+	rm -r * 2> /dev/null
+	mv /tbu/iflbuild-saveiso/*.iso /tbu/iflbuild/ 2> /dev/null
+	rm -r /tbu/iflbuild-saveiso 2> /dev/null
+	cd /tbu
+    fi
+}
+
+checkextracted_distro() {
+    zipextracted=1
+    for i in setup makeISO makeHDD iflnet.iso ifl.iso util config.txt
+    do
+	if [ ! -e $i ]; then
+	    zipextracted=0
+	    break
+	fi
+    done
+    if [ "$zipextracted" = "0" ]; then
+	echo "One or more files are missing from this IFL directory. Please start over"
+	echo "by re-extracting the IFL zip file (e.g. ifl_en.zip, ifl_en_gui.zip) to"
+	echo "an empty directory."
+	echo
+	exit 1
+    fi
+}
+
+run_makeHDD_manual() {
+
+currentcmd="$makeHDDpath "
+while [ 0 ]; do
+
+if [ "$iflbootmediamode" = "Distro Mode" ]; then
+$dialogpath --no-shadow --max-input 100 --title "Enter makeHDD Command Line" \
+--inputbox "\nCurrent command line: $currentcmd \n\n\
+Usage:  $makeHDDpath /dev/sdx[y] [/a] [/mbr] [/c] [/nn] [/nf] [/r]\n\
+  x      - letter repesenting a specific drive (e.g. sdb)\n\
+  y      - number representing a specific partition (e.g. sdb2)\n\
+  /mbr   - write standard MBR to drive containing target partition\n\
+  /a     - set the target partition active\n\
+  /c     - create custom version (dislays menu of options)\n\
+  /nn    - create non-network version (smaller size)\n\
+  /nf    - do not format partition (FAT16, FAT32 only)\n\
+  /r     - create restore media instead of full IFL media\n\n
+Type in makeHDD command line, then press <Enter> to execute\n \n" 22 78 "$currentcmd" 2> /tmp/makehddcmd
+
+elif [ "$iflbootmediamode" = "Boot Disk Mode" ]; then
+$dialogpath --no-shadow --max-input 100 --title "Enter makeHDD Command Line" \
+--inputbox "\nCurrent command line: $currentcmd \n\n\
+Usage:  $makeHDDpath /dev/sdx[y] [/a] [/mbr] [/doini] [/nf] [/r]\n\
+  x      - letter repesenting a specific drive (e.g. sdb)\n\
+  y      - number representing a specific partition (e.g. sdb2)\n\
+  /mbr   - write standard MBR to drive containing target partition\n\
+  /a     - set the target partition active\n\
+  /doini - copy custom MakeDisk files (if any) into root fs\n\
+  /nf    - do not format partition (FAT16, FAT32 only)\n\
+  /r     - create restore media instead of full IFL media\n\n
+Primary use: Install (copy) existing IFL boot media to another drive or partition. Example: Copy IFL from a UFD or optical disc to a hard drive partition. See the KB article at the URL below for more information:\n
+https://www.terabyteunlimited.com/kb/article.php?id=545\n\n
+Type in makeHDD command line, then press <Enter> to execute\n \n" 25 80 "$currentcmd" 2> /tmp/makehddcmd
+
+elif [ "$iflbootmediamode" = "Zip File Mode" ]; then
+$dialogpath --no-shadow --max-input 100 --title "Enter makeHDD Command Line" \
+--inputbox "\nCurrent command line: $currentcmd \n\n\
+Usage:  $makeHDDpath /dev/sdx[y] [/a] [/mbr] [/c] [/nn] [/nf]\n\
+  x      - letter repesenting a specific drive (e.g. sdb)\n\
+  y      - number representing a specific partition (e.g. sdb2)\n\
+  /mbr   - write standard MBR to drive containing target partition\n\
+  /a     - set the target partition active\n\
+  /c     - create custom version (dislays menu of options)\n\
+  /nn    - create non-network version (smaller size)\n\
+  /nf    - do not format partition (FAT16, FAT32 only)\n\n
+Type in makeHDD command line, then press <Enter> to execute\n \n" 22 78 "$currentcmd" 2> /tmp/makehddcmd
+fi
+
+
+if [ ! "$?" = "0" ]; then break; fi
+makehddcmd=`cat /tmp/makehddcmd`
+currentcmd=$makehddcmd
+rm /tmp/makehddcmd 2> /dev/null
+$makehddcmd
+if [ "$?" = "1" ]; then
+    echo "ERROR Encountered. Press <Enter> to continue."
+    read xyz
+else
+    echo "Press <Enter> to continue"
+    read xyz
+    break
+fi
+done
+}
+
+run_makeHDD_menu() {
+
+ilayout="Partitioned"
+idrive=""
+idrivetext="<Not yet specified>"
+idrivedisplay=""
+idrivepart="1"
+imode="Default"
+imodeswitch=""
+
+iformat="Yes"
+iformatswitch=""
+
+inet="Network"
+inetswitch=""
+
+noconfirmswitch="/nocfm"
+
+partedpath=`which parted 2> /dev/null`
+if [ "$?" != "0" ]; then
+    $dialogpath --no-shadow --title "Parted Utility Required" --msgbox "\nThe parted utility is required for this menu item. This can usually be corrected by installing the 'parted' package.\n\n                Press <Enter> to continue" 10 65 2> /dev/null
+    return
+fi
+
+while [ 0 ]; do
+    if [ "$idrivetext" = "<Not yet specified>" ]; then
+	if [ "$ibootmediatype" = "Full" ]; then
+	    currentcmd="$makeHDDpath $idrivetext $imodeswitch $inetswitch $iformatswitch"
+	else
+	    currentcmd="$makeHDDpath $idrivetext $ibootmediatypeswitch $iformatswitch"
+	fi
+    else
+	if [ "$ibootmediatype" = "Full" ]; then
+	    currentcmd="$makeHDDpath $idrivetext$idrivepart $imodeswitch $inetswitch $iformatswitch"
+	else
+	    currentcmd="$makeHDDpath $idrivetext$idrivepart $ibootmediatypeswitch $iformatswitch"
+	fi
+    fi
+
+    if [ "$ibootmediatype" = "Full" ]; then
+	$dialogpath --no-shadow --title  "Install To Removable Drive - Full" --menu "Drive:                $idrivetext  $idrivedisplay\nDrive layout:         $ilayout\nDefault/Custom:       $imode\nNetwork/Non-network:  $inet\nReformat drive:       $iformat\nBoot Media Type:      $ibootmediatype\n\nCurrent command line: $currentcmd\n\nUse the menu below to select a removable drive to install to, and other options as needed. When ready to install, choose 'Create the boot media'.\n \n" 25 78 7 \
+	"Exit Menu" "" \
+	"Select drive" "" \
+	"Select drive layout" "" \
+	"Default or custom version (toggle)" "" \
+	"Network or non-network version (toggle)" "" \
+	"Reformat the drive (yes/no)" "" \
+	"Create the boot media" "" 2> /tmp/HDDmselect
+    elif [ -f /tbu/utility/running ]; then
+	$dialogpath --no-shadow --title  "Install To Removable Drive - Restore" --menu "Drive:                $idrivetext  $idrivedisplay\nDrive layout:         $ilayout\nReformat drive:       $iformat\nBoot Media Type:      $ibootmediatype\n\nCurrent command line: $currentcmd\n\nUse the menu below to select a removable drive to install to, and other options as needed. When ready to install, choose 'Create the boot media'.\n\nREMINDER: This menu only creates RESTORE boot media.\n \n" 24 78 6 \
+	"Exit Menu" "" \
+	"Select drive" "" \
+	"Select drive layout" "" \
+	"Reformat the drive (yes/no)" "" \
+	"Restore disc settings" "" \
+	"Create the boot media" "" 2> /tmp/HDDmselect
+    else
+	$dialogpath --no-shadow --title  "Install To Removable Drive - Restore" --menu "Drive:                $idrivetext  $idrivedisplay\nDrive layout:         $ilayout\nReformat drive:       $iformat\nBoot Media Type:      $ibootmediatype\n\nCurrent command line: $currentcmd\n\nUse the menu below to select a removable drive to install to, and other options as needed. When ready to install, choose 'Create the boot media'.\n\nREMINDER: This menu creates RESTORE boot media on removable drives such as UFDs. Select 'Install IFL to removable drive' for full IFL boot media.\n \n" 25 78 6 \
+	"Exit Menu" "" \
+	"Select drive" "" \
+	"Select drive layout" "" \
+	"Reformat the drive (yes/no)" "" \
+	"Restore disc settings (runs setup)" "" \
+	"Create the boot media" "" 2> /tmp/HDDmselect
+    fi
+
+    if [ ! "$?" = "0" ]; then 
+	rm -f /tmp/HDDmselect 2> /dev/null
+	break
+    fi
+
+    HDDmselect=`cat /tmp/HDDmselect`
+    rm /tmp/HDDmselect 2> /dev/null
+
+    if [ "$HDDmselect" = "Exit Menu" ]; then
+	cd /tbu
+	break
+    elif [ "$HDDmselect" = "Select drive layout" ]; then
+	defaultitem="--default-item $ilayout"
+	$dialogpath --no-shadow $defaultitem --title  "Select Drive Layout" --menu "\nCurrent drive layout: $ilayout\n\nUse the menu below to select the desired drive layout.\n\nIt is suggested to use Partitioned (default) unless you experience boot problems with it. Either layout should work on most systems.\n \n" 17 78 2 \
+	"Partitioned" "(FAT32, occupies entire drive)" \
+	"Unpartitioned" "(FAT32, occupies entire drive)" 2> /tmp/PARTmselect
+	if [ "$?" != "0" ]; then 
+	    rm -f /tmp/PARTmselect 2> /dev/null
+	else
+	    PARTmselect=`cat /tmp/PARTmselect`
+	    rm /tmp/PARTmselect 2> /dev/null
+	    if [ "$PARTmselect" = "Partitioned" ]; then
+		ilayout="Partitioned"
+		idrivepart="1"
+	    else 
+		ilayout="Unpartitioned"
+		idrivepart=""
+	    fi
+	fi
+    elif [ "$HDDmselect" = "Boot media type" ]; then
+	defaultitem="--default-item $ibootmediatype"
+	$dialogpath --no-shadow $defaultitem --title  "Select Boot Media Type" --menu "\nCurrent boot media type: $ibootmediatype\n\nSelect Full (default) for the IFL full boot media suporting backup, restore, and copy operations. Select Restore for restore-only boot media (same capabilities as optical restore discs).\n \n" 15 78 2 \
+	"Full" "(Full IFL capabilities)" \
+	"Restore" "(Restore-only capability)" 2> /tmp/BMEDIAmselect
+	if [ "$?" != "0" ]; then 
+	    rm -f /tmp/BMEDIAmselect 2> /dev/null
+	else
+	    BMEDIAmselect=`cat /tmp/BMEDIAmselect`
+	    rm /tmp/BMEDIAmselect 2> /dev/null
+	    if [ "$BMEDIAmselect" = "Full" ]; then
+		if [ "$ibootmediatype" = "Restore" ]; then
+		    ibootmediatype="Full"
+		    ibootmediatypeswitch=""
+		fi
+	    elif [ "$BMEDIAmselect" = "Restore" ]; then
+		if [ "$ibootmediatype" = "Full" ]; then
+		    ibootmediatype="Restore"
+		    ibootmediatypeswitch="/r"
+		fi
+	    fi
+	fi
+    elif [ "$HDDmselect" = "Reformat the drive (yes/no)" ]; then
+	defaultitem="--default-item $iformat"
+	$dialogpath --no-shadow $defaultitem --title  "Reformat The Drive (Yes/No)" --menu "\nCurrent reformat setting: $iformat\n\nSelect 'Yes' (default) to reformat the drive during the install. Select 'No' only if you wish to preserve any non-IFL Boot Disk files on the drive, such as existing TBI image files.\n \n" 16 78 2 \
+	"Yes" "" \
+	"No" "" 2> /tmp/FORMATmselect
+	if [ "$?" != "0" ]; then 
+	    rm -f /tmp/FORMATmselect 2> /dev/null
+	else
+	    iformat=`cat /tmp/FORMATmselect`
+	    rm /tmp/FORMATmselect 2> /dev/null
+	    if [ "$iformat" = "Yes" ]; then
+		iformatswitch=""
+	    else
+		iformatswitch="/nf"
+	    fi
+	fi
+    elif [ "$HDDmselect" = "Select drive" ]; then
+	select_removable_drive
+    elif [ "$HDDmselect" = "Default or custom version (toggle)" ]; then
+	if [ "$imode" = "Default" ]; then
+	    imode="Custom"
+	    imodeswitch="/c"
+	else 
+	    imode="Default"
+	    imodeswitch=""
+	fi
+    elif [ "$HDDmselect" = "Network or non-network version (toggle)" ]; then
+	if [ "$inet" = "Network" ]; then
+	    inet="Non-network"
+	    inetswitch="/nn"
+	else 
+	    inet="Network"
+	    inetswitch=""
+	fi
+    elif [ "$HDDmselect" = "Restore disc settings" ]; then
+	/usr/bin/restore-menu
+    elif [ "$HDDmselect" = "Restore disc settings (runs setup)" ]; then
+	./setup
+	echo "Press <Enter> to continue"
+	read xyz
+    elif [ "$HDDmselect" = "Create the boot media" ]; then
+	if [ "$idrive" = "" ]; then 
+	    $dialogpath --no-shadow --title "No Drive Selected" --msgbox "\nNo removable drive has been selected. Please use the 'Select drive' menu item to select the drive to install to.\n\n                Press <Enter> to continue" 10 60 2> /dev/null	
+	else
+	    mdisk=`mount | grep /dev/$idrive > /dev/null 2>&1`
+	    if [ "$?" = "0" ]; then
+		$dialogpath --no-shadow --title "Target Drive Or Partition Is Currently Mounted" --msgbox "\nTarget drive /dev/$idrive, or one or more partitions on it, are currently mounted. Everything on the drive must be unmounted before proceeding with this step.\n\n                Press <Enter> to continue" 11 60 2> /dev/null
+	    else
+		$dialogpath --no-shadow --max-input 100 --title "Confirm Install To Removable Drive" --inputbox "\nWARNING: ALL DATA and ALL PARTITIONS currently on the removable drive listed below will be LOST.\n\nTarget drive:  /dev/$idrive  $idrivedisplay\nDrive layout:  $ilayout\n\nType 'yes' in the text box below to CONFIRM installing IFL to drive /dev/$idrive.\n \n" 18 70  2> /tmp/GETconfirm
+		if [ "$?" != "0" ]; then
+		    rm /tmp/GETconfirm 2> /dev/null
+		else
+		    GETconfirm=`cat /tmp/GETconfirm`
+		    rm /tmp/GETconfirm 2> /dev/null
+		    if [ "$GETconfirm" = "yes" ]; then
+			if [ "$ilayout" = "Partitioned" ]; then
+			    if [ -f /tbu/utility/running ]; then
+				# if [ -f /tbu/utility/gui ]; then
+				#    /tbu/imagel --r --d:/dev/$idrive --f:/tbu/utility/ufdpart.tbi --x --nos:50m --uy
+				#else
+				#    /tbu/imagel --r --d:/dev/$idrive --f:/tbu/utility/ufdpart.tbi --x --nos:50m --uy
+				#fi
+				cd $workingdir
+				nsectors=`cat /sys/block/$idrive/size`
+				let nsectors=nsectors-1
+				nsectors_suffix="s"
+				nsectors_cl="$nsectors$nsectors_suffix"
+				$partedpath -s /dev/$idrive mklabel msdos
+				$partedpath -s /dev/$idrive mkpart primary fat32 2048s $nsectors_cl
+				$partedpath -s /dev/$idrive set 1 boot on
+				cp /tbu/utility/mbr.bin /dev/$idrive
+			    else
+				cd $workingdir
+				nsectors=`cat /sys/block/$idrive/size`
+				let nsectors=nsectors-1
+				nsectors_suffix="s"
+				nsectors_cl="$nsectors$nsectors_suffix"
+				$partedpath -s /dev/$idrive mklabel msdos
+				$partedpath -s /dev/$idrive mkpart primary fat32 2048s $nsectors_cl
+				$partedpath -s /dev/$idrive set 1 boot on
+				cp util/mbr.bin /dev/$idrive
+			    fi
+			    blockdev --rereadpt /dev/$idrive
+			    rm /tmp/iflrestore 2> /dev/null
+			fi
+			$currentcmd $noconfirmswitch
+			if [ "$?" = "1" ]; then
+			    echo "ERROR Encountered. Press <Enter> to continue"
+			    read xyz
+			else
+			    echo "Press <Enter> to continue"
+			    read xyz
+			    break
+			fi
+		    fi
+		fi
+	    fi
+	fi
+    fi
+done
+}
+
+select_removable_drive() {
+
+    ndrives=0; driveslist=""
+    for f in sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm sdn sdo sdp sdq sdr sds sdt sdu sdv sdw sdx sdy sdz
+    do
+	remov=0
+	if [ -e /sys/block/$f ]; then
+	    remov=`cat /sys/block/$f/removable`
+	    if [ "$remov" = "1" ]; then
+		dsize=`cat /sys/block/$f/size`
+		if [ "$dsize" != "2880" ] && [ "$dsize" != "0" ]; then
+		    let ndrives=ndrives+1
+		    drivesarray[$ndrives]="$f"
+		    drivesarraytext[$ndrives]="/dev/$f"
+    		    vendor[$ndrives]=`cat /sys/block/$f/device/vendor`
+    		    model[$ndrives]=`cat /sys/block/$f/device/model`
+    		    dsize[$ndrives]=$dsize
+    		    let dsizedisplay=dsize*512
+        	    let dsizedisplay=dsizedisplay/1024
+        	    let dsizedisplay=dsizedisplay/1024
+        	    if [ "$dsizedisplay" -lt "102400" ]; then
+            		dsuffix="_MiB"
+            		dsizedisplay[$ndrives]="$dsizedisplay$dsuffix"
+        	    else
+            		let dsizedisplay=dsizedisplay/1024
+            		dsuffix="_GiB"
+            		dsizedisplay[$ndrives]="$dsizedisplay$dsuffix"
+        	    fi
+        	    # drivesdesc[$ndrives]="${dsizedisplay[$ndrives]}_${vendor[$ndrives]}"
+    		    drivesdesc[$ndrives]="${dsizedisplay[$ndrives]}"
+    		    driveslist="$driveslist${drivesarraytext[$ndrives]} ${drivesdesc[$ndrives]} "
+    		fi
+	    fi
+	fi
+    done
+    if [ "$ndrives" = "0" ]; then
+	$dialogpath --no-shadow --title "No Removable Drives Detected" --msgbox "\nNo removable drives have been detected on this system\n\n                Press <Enter> to continue" 9 60 2> /dev/null
+	return
+    else
+	let nmenuitems=$ndrives+1
+	let menuheight=$nmenuitems+10
+	if [ "$menuheight" -gt "25" ]; then menuheight=25; fi
+	$dialogpath --no-shadow --title  "Select Removable Drive" --menu "\nSelect a removable drive from the list below.\n \n" $menuheight 70  $nmenuitems \
+	"Exit Menu" "" \
+	$driveslist  2> /tmp/DRselect
+	if [ ! $? = 0 ]; then
+	    rm -f /tmp/DRselect 2> /dev/null
+	    return
+	fi
+
+	DRselect=`cat /tmp/DRselect`
+	rm /tmp/DRselect 2> /dev/null
+
+	if [ "$DRselect" = "Exit Menu" ]; then return 0; fi
+	for i in `seq 1 $ndrives`
+	do
+	    if [ "$DRselect" = "${drivesarraytext[$i]}" ]; then
+		idrivetext=${drivesarraytext[$i]}
+		idrive=${drivesarray[$i]}
+		idrivedisplay="${dsizedisplay[$i]} (${vendor[$i]} ${model[$i]})"
+		break
+	    fi
+	done
+    fi
+}
+
+select_drive_partition() {
+while [ 0 ]; do
+    ndrives=0; driveslist=""
+    for f in sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm sdn sdo sdp sdq sdr sds sdt sdu sdv sdw sdx sdy sdz
+    do
+	if [ -e /sys/block/$f ]; then
+	    dsize=`cat /sys/block/$f/size`
+	    if [ "$dsize" != "2880" ] && [ "$dsize" != "0" ]; then
+		# check for GPT drive and do not list them
+		dd if=/dev/$f of=/tmp/tmpfile bs=1 count=8 skip=512 2> /dev/null
+		a=`cat /tmp/tmpfile`; rm /tmp/tmpfile 2> /dev/null
+		if [ "$a" != "EFI PART" ]; then
+		    let ndrives=ndrives+1
+		    drivesarray[$ndrives]="$f"
+		    drivesarraytext[$ndrives]="/dev/$f"
+    		    vendor[$ndrives]=`cat /sys/block/$f/device/vendor`
+    		    #model[$ndrives]=`cat /sys/block/$f/device/model`
+    		    dsize[$ndrives]=$dsize
+    		    let dsizedisplay=dsize*512
+        	    let dsizedisplay=dsizedisplay/1024
+        	    let dsizedisplay=dsizedisplay/1024
+        	    if [ "$dsizedisplay" -lt "102400" ]; then
+            		dsuffix="_MiB"
+            		dsizedisplay[$ndrives]="$dsizedisplay$dsuffix"
+        	    else
+            		let dsizedisplay=dsizedisplay/1024
+            		dsuffix="_GiB"
+            		dsizedisplay[$ndrives]="$dsizedisplay$dsuffix"
+        	    fi
+        	    # drivesdesc[$ndrives]="${dsizedisplay[$ndrives]}_${vendor[$ndrives]}"
+    		    drivesdesc[$ndrives]="${dsizedisplay[$ndrives]}"
+    		    driveslist="$driveslist${drivesarraytext[$ndrives]} ${drivesdesc[$ndrives]} "
+    		fi
+	    fi
+	fi
+    done
+    if [ "$ndrives" = "0" ]; then
+	echo "message box here to say no drives"
+	read xyz
+	return
+    else
+	let nmenuitems=$ndrives+1
+	let menuheight=$nmenuitems+10
+	if [ "$menuheight" -gt "25" ]; then menuheight=25; fi
+	$dialogpath --no-shadow --title  "Select Drive" --menu "\nSelect a drive from the list below.\n \n" $menuheight 70  $nmenuitems \
+	"Exit Menu" "" \
+	$driveslist  2> /tmp/DRselect
+	if [ ! $? = 0 ]; then
+	    rm -f /tmp/DRselect 2> /dev/null
+	    return
+	fi
+
+	DRselect=`cat /tmp/DRselect`
+	rm /tmp/DRselect 2> /dev/null
+
+	if [ "$DRselect" = "Exit Menu" ]; then return 0; fi
+	for i in `seq 1 $ndrives`
+	do
+	    if [ "$DRselect" = "${drivesarraytext[$i]}" ]; then
+		pdrivetext=${drivesarraytext[$i]}
+		pdrive=${drivesarray[$i]}
+		break
+	    fi
+	done
+
+	# get list of partitions
+	nparts=0; partslist=""
+	for p in `seq 1 64`
+	do
+	    if [ -e /sys/block/$pdrive/$pdrive$p ]; then
+		let nparts=nparts+1
+		partsarray[$nparts]="$pdrive$p"
+		partsarraytext[$nparts]="/dev/$pdrive$p"
+		psize=`cat /sys/block/$pdrive/$pdrive$p/size`
+    		psize[$ndrives]=$psize
+    		let psizedisplay=psize*512
+    		let psizedisplay=psizedisplay/1024
+    		let psizedisplay=psizedisplay/1024
+    		if [ "$psizedisplay" -lt "102400" ]; then
+        	    psuffix="_MiB"
+            	    psizedisplay[$nparts]="$psizedisplay$psuffix"
+    		else
+        	    let psizedisplay=psizedisplay/1024
+            	    psuffix="_GiB"
+            	    psizedisplay[$nparts]="$psizedisplay$psuffix"
+    		fi
+    		partsdesc[$nparts]="${psizedisplay[$nparts]}"
+    		partslist="$partslist${partsarraytext[$nparts]} ${partsdesc[$nparts]} "
+    	    fi
+	done
+
+	if [ "$nparts" = "0" ]; then
+	    echo "message box here to say no partitions on this drive"
+	    read xyz
+	else
+	    let nmenuitems=$nparts+1
+	    let menuheight=$nmenuitems+10
+	    if [ "$menuheight" -gt "25" ]; then menuheight=25; fi
+	    $dialogpath --no-shadow --title  "Select Partition on /dev/$pdrive" --menu "\nSelect a partition from the list below.\n \n" $menuheight 70 $nmenuitems \
+	    "Exit Menu" "" \
+	    $partslist  2> /tmp/Pselect
+	    if [ ! $? = 0 ]; then
+		rm -f /tmp/Pselect 2> /dev/null
+	    else
+		Pselect=`cat /tmp/Pselect`
+		rm /tmp/Pselect 2> /dev/null
+		for i in `seq 1 $nparts`
+		do
+		    if [ "$Pselect" = "${partsarraytext[$i]}" ]; then
+			ipartitiontext=${partsarraytext[$i]}
+			ipartition=${partsarray[$i]}
+			return
+		    fi
+		done
+	    fi
+	fi
+    fi
+done
+}
+
+
+get_optical_drives() {
+
+#if [ -f /tbu/utility/running ]; then
+#    ndvdrw=0; dvdrwlist=""
+#    for srxdrive in sr0 sr1 sr2 sr3 sr4 sr5 sr6 sr7
+#    do
+#	if [ -e /dev/$srxdrive ]; then
+#	    for dvdlink in dvdrw dvdrw1 dvdrw2 dvdrw3 dvdrw4 dvdrw5 dvdrw6 dvdrw7 cdrw cdrw1 cdrw2 cdrw3 cdrw4 sdrw5 cdrw6 cdrw7
+#	    do
+#		if [ -e /dev/$dvdlink ]; then
+#		    ls -l /dev/$dvdlink | grep $srxdrive > /dev/null
+#		    if [ "$?" = "0" ]; then
+#			let ndvdrw=ndvdrw+1
+#			dvdrwarray[$ndvdrw]=$srxdrive
+#			dvdrwarraytext[$ndvdrw]="/dev/$srxdrive"
+#			vendor=`cat /sys/block/$srxdrive/device/vendor`
+#    			model=`cat /sys/block/$srxdrive/device/model`
+#			dvdrwdesc[$ndvdrw]="/dev/$srxdrive = $vendor $model"
+#    			dvdrwmenudesc[$ndvdrw]="(/dev/$dvdlink)"
+#    			dvdrwlist="$dvdrwlist${dvdrwarraytext[$ndvdrw]} ${dvdrwmenudesc[$ndvdrw]} "
+#			dvdrwselectedtext[$ndvdrw]="/dev/$srxdrive ($vendor $model)"
+#			break
+#		    fi
+#		fi
+#	    done
+#	fi
+#    done
+#else
+    # if distro, can't depend on device links for optical drives being there
+    ndvdrw=0; dvdrwlist=""
+    for srxdrive in sr0 sr1 sr2 sr3 sr4 sr5 sr6 sr7
+    do
+	if [ -e /dev/$srxdrive ]; then
+	    let ndvdrw=ndvdrw+1
+	    dvdrwarray[$ndvdrw]=$srxdrive
+	    dvdrwarraytext[$ndvdrw]="/dev/$srxdrive"
+	    vendor=`cat /sys/block/$srxdrive/device/vendor`
+    	    model=`cat /sys/block/$srxdrive/device/model`
+	    dvdrwdesc[$ndvdrw]="/dev/$srxdrive = $vendor $model"
+	    dvdrwmenudesc[$ndvdrw]="($ndvdrw)"
+	    dvdrwlist="$dvdrwlist${dvdrwarraytext[$ndvdrw]} ${dvdrwmenudesc[$ndvdrw]} "
+	    dvdrwselectedtext[$ndvdrw]="/dev/$srxdrive ($vendor $model)"
+	fi
+    done
+#fi
+}
+
+burn_iso() {
+    # check if cdrskin is installed
+    cdrskinpath=`which cdrskin 2> /dev/null`
+    if [ "$?" != "0" ]; then
+	$dialogpath --no-shadow --title "cdrskin utility is required" --msgbox "\nThe cdrskin utility is required to burn ISO files from this script. This can usually be corrected by installing the 'cdrskin' package.\n\n                Press <Enter> to continue" 11 60 2> /dev/null
+	return
+    fi
+
+    # check for CD/DVD writers
+    get_optical_drives
+
+    # return if no cdrw or dvdrw capable drives available
+    if [ "$ndvdrw" = "0" ]; then
+	$dialogpath --no-shadow --title "No Optical Drives Detected" --msgbox "\n     No optical drives were detected on this system\n\n                Press <Enter> to continue" 9 60 2> /dev/null
+	return
+    fi
+    
+    # save list of ISO files in the working directory
+    cd $workingdir
+    ls *.iso > isofiles.lst 2> /dev/null
+    nisofiles=0; isofilelist=""
+    while read line
+    do
+	let nisofiles=nisofiles+1
+	isofilearray[$nisofiles]=$line
+	if [ "${isofilearray[$nisofiles]}" = "iflnet.iso" ]; then
+	    isofiledesc[$nisofiles]="Default_network_version"
+	elif [ "${isofilearray[$nisofiles]}" = "iflnet-custom.iso" ]; then
+	    isofiledesc[$nisofiles]="Custom_network_version"
+	elif [ "${isofilearray[$nisofiles]}" = "ifl.iso" ]; then
+	    isofiledesc[$nisofiles]="Default_non_network_version"
+	elif [ "${isofilearray[$nisofiles]}" = "ifl-custom.iso" ]; then
+	    isofiledesc[$nisofiles]="Custom_non_network_version"
+	else
+	    isofiledesc[$nisofiles]="Unknown_file"
+	fi
+	isofilelist="$isofilelist${isofilearray[$nisofiles]} ${isofiledesc[$nisofiles]} "
+    done < "$workingdir/isofiles.lst"
+
+    # return if no ISO files in working directory
+    if [ "$nisofiles" = "0" ]; then
+	$dialogpath --no-shadow --title "No ISO Files Found" --msgbox "\n   No ISO files were found in the $workingdir directory\n\n                Press <Enter> to continue" 9 60 2> /dev/null
+	return
+    fi
+
+    # have at least one CD/DVD writer, and at least one ISO file
+    # display menu to select ISO file
+    let nmenuitems=$nisofiles+1
+    let menuheight=$nmenuitems+10
+    if [ "$menuheight" -gt "25" ]; then menuheight=25; fi
+    $dialogpath --no-shadow --title  "Select ISO File To Burn" --menu "\nSelect an ISO file to burn to optical disc\n \n" $menuheight 70  $nmenuitems \
+    "Exit Menu" "" \
+    $isofilelist  2> /tmp/ISOselect
+    if [ ! $? = 0 ]; then
+	rm -f /tmp/ISOselect 2> /dev/null
+	return
+    fi
+    ISOselect=`cat /tmp/ISOselect`
+    rm /tmp/ISOselect 2> /dev/null
+    if [ "$ISOselect" = "Exit Menu" ]; then return 0; fi
+    isofile=$ISOselect
+
+    # display menu to select dvdrw drive to burn ISO
+    menutext=""
+    for i in `seq 1 $ndvdrw`
+    do
+        menutext="$menutext${dvdrwdesc[$i]}\n"
+    done
+    let nmenuitems=$ndvdrw+1
+    let menuheight=2*$nmenuitems+10
+    if [ "$menuheight" -gt "25" ]; then menuheight=25; fi
+    $dialogpath --no-shadow --title  "Select Optical Drive" --menu "\nSelect an optical drive to burn $isofile to:\n\n$menutext \n" $menuheight 70  $nmenuitems \
+    "Exit Menu" "" \
+    $dvdrwlist  2> /tmp/DVDselect
+    if [ ! $? = 0 ]; then
+	rm -f /tmp/DVDselect 2> /dev/null
+	return
+    fi
+    DVDselect=`cat /tmp/DVDselect`
+    rm /tmp/DVDselect 2> /dev/null
+    if [ "$DVDselect" = "Exit Menu" ]; then return 0; fi
+    for i in `seq 1 $ndvdrw`
+    do
+	if [ "$DVDselect" = "${dvdrwarraytext[$i]}" ]; then
+	    dvdrwtext=${dvdrwarraytext[$i]}
+	    dvdrw=${dvdrwarray[$i]}
+	    break
+	fi
+    done
+
+    eject /dev/$dvdrw
+    $dialogpath --no-shadow --yes-label "OK" --no-label "Cancel"  --title "Insert Optical Disc Media" --yesno "\nInsert writable optical media into drive /dev/$dvdrw. If the drive has a manual tray, please close the tray.\n\nWhen ready, press <Enter> to continue, or select <Cancel> to cancel the operation. \n\n" 11 60 2> /dev/null
+    if [ ! "$?" = "0" ]; then return; fi
+
+    # will pull in drive tray if capable
+    eject -t /dev/$dvdrw 2> /dev/null
+    # wait for media to be detected
+    mediawait=0
+    $dialogpath --no-shadow --infobox "  Waiting for optical media to be detected..." 3 50 2> /dev/null
+    usleep 10000000
+
+    # burn it
+    clear
+    echo "Now running command line to burn $isofile to drive /dev/$dvdrw..."
+    echo
+    $cdrskinpath -v dev=/dev/$dvdrw fs=8m blank=as_needed -eject padsize=300k $workingdir/$isofile 2> /dev/null
+    echo "Return code = $?"
+    echo
+    echo "Press <Enter> to continue"
+    read xyz
+}
+
+do_ifl_ini() {
+
+viewfile=1
+while [ 0 ]; do
+    if [ "$viewfile" = "1" ]; then
+	$dialogpath --exit-label "Press <Enter> To Continue" --title "Current Contents of ifl-custom.ini" --textbox $workingdir/ifl-custom.ini 20 70
+    else
+	viewfile=1
+    fi
+    $dialogpath --no-shadow --title  "View/Modify ifl-custom.ini File" --menu "\nPlease select an item from the menu below:\n \n" 14 60 4 \
+    "Exit Menu" "" \
+    "Select global options from a list" "" \
+    "Directly edit the ifl-custom.ini file" "" \
+    "View the ifl-custom.ini file" "" 2> /tmp/INIselect
+    if [ "$?" != "0" ]; then
+	rm /tmp/INIselect 2> /dev/null
+	return
+    fi
+    INIselect=`cat /tmp/INIselect`
+    rm /tmp/INIselect 2> /dev/null
+
+    if [ "$INIselect" = "Exit Menu" ]; then
+	return
+    elif [ "$INIselect" = "Select global options from a list" ]; then
+        # initialize the ini settings arrays
+	ngoptions=14
+	initextarray[1]="Disable Global Geometry"; iniarray[1]="GlobalGeoDisable=1"; iniarrayselected[1]="off"; inigreparray[1]="GlobalGeoDisable="
+        initextarray[2]="Disable Align MBR for BIOS Auto Mode"; iniarray[2]="GlobalGeoAlignHS=0"; iniarrayselected[2]="off"; inigreparray[2]="GlobalGeoAlignHS="
+	initextarray[3]="Align Partitions on 1MiB Boundaries"; iniarray[3]="GlobalGeoAlign2K=1"; iniarrayselected[3]="off"; inigreparray[3]="GlobalGeoAlign2K="
+	initextarray[4]="Assume Same Target System"; iniarray[4]="GlobalGeoMBRGeo=1"; iniarrayselected[4]="off"; inigreparray[4]="GlobalGeoMBRGeo="
+	initextarray[5]="Use Source Host Geometry"; iniarray[5]="GlobalGeoOrgGeo=1"; iniarrayselected[5]="off"; inigreparray[5]="GlobalGeoOrgGeo="
+	initextarray[6]="Disable Validate Geometry Before Use"; iniarray[6]="GlobalGeoMBRGeoValidate=0"; iniarrayselected[6]="off"; inigreparray[6]="GlobalGeoMBRGeoValidate="
+
+	initextarray[7]="Simple Operations"; iniarray[7]="Simple=1"; iniarrayselected[7]="off"; inigreparray[7]="Simple="
+	initextarray[8]="Use Windows 9x MBR"; iniarray[8]="Win7MBR=0"; iniarrayselected[8]="off"; inigreparray[8]="Win7MBR="
+	initextarray[9]="Disable Automatic Scaling Restrictions"; iniarray[9]="AutoScaleRestrict=0"; iniarrayselected[9]="off"; inigreparray[9]="AutoScaleRestrict="
+	initextarray[10]="Disable Automatic Boot Partition Updates"; iniarray[10]="AutoUpdateBootPart=0"; iniarrayselected[10]="off"; inigreparray[10]="AutoUpdateBootPart="
+	initextarray[11]="Disable Automatic Restore Drive Search"; iniarray[11]="SearchOnAutoRestore=0"; iniarrayselected[11]="off"; inigreparray[11]="SearchOnAutoRestore="
+	initextarray[12]="Retain Failed Backups"; iniarray[12]="KeepFailedBackups=1"; iniarrayselected[12]="off"; inigreparray[12]="KeepFailedBackups="
+	initextarray[13]="Completion Alarm"; iniarray[13]="CompletionAlarm=1"; iniarrayselected[13]="off"; inigreparray[13]="CompletionAlarm="
+	initextarray[14]="Disable Resize with Caching"; iniarray[14]="CacheResize=0"; iniarrayselected[14]="off"; inigreparray[14]="CacheResize="
+
+	$dialogpath --title "Select ifl.ini Options" --checklist "\nUse <SpaceBar> to select/de-select none/some/all of the ifl.ini options listed below.\
+	When ready, press <Enter> to add the selected items to ifl-custom.ini, as well as remove all de-selected items.\n \n" 25 75 14 \
+	"Disable Global Geometry" "" off \
+	"Disable Align MBR for BIOS Auto Mode" "" off \
+	"Align Partitions on 1MiB Boundaries" "" off \
+	"Assume Same Target System" "" off \
+	"Use Source Host Geometry" "" off \
+	"Disable Validate Geometry Before Use" "" off \
+	"Simple Operations" "" off \
+	"Use Windows 9x MBR" "" off \
+	"Disable Automatic Scaling Restrictions" "" off \
+	"Disable Automatic Boot Partition Updates" "" off \
+	"Disable Automatic Restore Drive Search" "" off \
+	"Retain Failed Backups" "" off \
+	"Completion Alarm" "" off \
+	"Disable Resize with Caching" "" off 2> /tmp/GLselect
+	if [ "$?" = "0" ]; then
+	    # delete any existing lines for checkbox options, but keep other lines
+	    for i in `seq 1 $ngoptions`
+	    do
+		grep -vi "${inigreparray[$i]}" $workingdir/ifl-custom.ini > $workingdir/ifl-custom-new.ini
+		mv $workingdir/ifl-custom-new.ini $workingdir/ifl-custom.ini
+	    done
+	    for i in `seq 1 $ngoptions`
+	    do
+		grep "${initextarray[$i]}" /tmp/GLselect > /dev/null
+		if [ "$?" = "0" ]; then
+		    echo "${iniarray[$i]}" >> $workingdir/ifl-custom.ini
+		fi
+	    done
+	    rm /tmp/GLselect 2> /dev/null
+	fi
+    elif [ "$INIselect" = "Directly edit the ifl-custom.ini file" ]; then
+	nanopath=`which nano 2> /dev/null`
+	if [ "$?" != "0" ]; then
+	    $dialogpath --no-shadow --title "Nano Editor Not Installed" --msgbox "\nThe 'nano' text editor required by this script to edit the ifl-custom.ini file is not currently installed. This can be corrected by installing the 'nano' package. If 'nano' is not available on this distribution, you will need to edit the file manually with another text editor of your choice.\n\n                  Press <Enter> to continue" 13 65 2> /dev/null
+	else
+	    $dialogpath --no-shadow --yes-label "OK" --no-label "Cancel"  --title "View/Edit ifl-custom.ini In Text Editor" --yesno "\nPress <Enter> to open ifl-custom.ini in the nano text editor. This provides a means to type in global options not listed on the checklist selection screen. One example would be to enter the line 'TimeZone=EST5EDT' to set the timezone to US Eastern time.\n\n<Ctrl+X> will exit without saving, or edit as needed, and then press <Ctrl+O> to save changes. Pressing <F1> will display the editor's help screen.\n\n" 14 70 2> /dev/null
+	    if [ "$?" = "0" ]; then
+		$nanopath $workingdir/ifl-custom.ini
+	    fi
+	fi
+    elif [ "$INIselect" = "View the ifl-custom.ini file" ]; then
+	$dialogpath --exit-label "Press <Enter> To Continue" --title "Current Contents of ifl-custom.ini" --textbox $workingdir/ifl-custom.ini 20 70
+	viewfile=0
+   fi
+done
+}
+
+burn_restore_disc() {
+
+# do this so that growisofspath has a value assigned when running from the boot disk
+# growisofs will only actually be checked for if not running from the boot disk
+growisofspath=`which growisofs 2> /dev/null`
+sdparmpath=`which sdparm 2> /dev/null`
+
+efibootoption="-efi-boot"
+burner=""; dvdrw=""; dvdrwtext=""; dvdrwmenutext="None selected"
+nftb=0; maxftb=25; criticalfilemissing=0; noefiboot=0
+volname="TBI_Backup"
+
+# if distro, check for critical files. if not available suggest using IFL Boot Disk
+if [ ! -f /tbu/utility/running ]; then
+    # check for growisofs
+    growisofspath=`which growisofs 2> /dev/null`
+    if [ "$?" = "0" ]; then havegrowisofs=1; else havegrowisofs=0; fi
+    sdparmpath=`which sdparm 2> /dev/null`
+    if [ "$?" = "0" ]; then havesdparm=1; else havesdparm=0; fi
+    if [ "$havegrowisofs" = "0" ] || [ "$havesdparm" = "0" ]; then
+	# can't run without it
+	criticalfilemissing=1
+	if [ "$havegrowisofs" = "0" ]; then
+	    $dialogpath --no-shadow --title "Growisofs Utility Not Installed" --msgbox "\nThe 'growisofs' utility required to burn existing image files to optical disc is not currently installed. This can usually be corrected by installing either the 'dvd+rw-tools' package, or the 'growisofs' package.\n\nIf 'growisofs' is not available on this distribution, you also have the option of doing this from the IFL Boot Disk.\n\n                  Press <Enter> to continue" 15 65 2> /dev/null
+	elif [ "$havesdparm" = "0" ]; then
+	    $dialogpath --no-shadow --title "Sdparm Utility is Not Installed" --msgbox "\nThe 'sdparm' utility required for this script to burn existing image files to optical discs is not currently installed. This can usually be corrected by installing the 'sdparm' package.\n\nIf 'sdparm' is not available on this distribution, you also have the option of doing this from the IFL Boot Disk.\n\n                  Press <Enter> to continue" 14 68 2> /dev/null
+	fi
+    else
+	havexorrisofs=0; havegenisoimage=0
+	while [ 0 ]; do
+	    # check for xorrisofs (first choice)
+	    xorrisofspath=`which xorrisofs 2> /dev/null`
+	    if [ "$?" = "0" ]; then
+		havexorrisofs=1
+		# if installed, check if it supports the --efi-boot option
+		$xorrisofspath --help 2> tmpgen.txt
+		grep "efi-boot" tmpgen.txt > /dev/null 2>&1
+		if [ "$?" = "0" ]; then
+		    efibootoption="--efi-boot"
+		    export GENISOIMAGE="xorrisofs"
+		    export MKISOFS="xorrisofs"
+		    break
+		fi
+	    fi
+	    # check for genisoimage
+	    genisoimagepath=`which genisoimage 2> /dev/null`
+	    if [ "$?" = "0" ]; then
+		havegenisoimage=1
+		# if installed, check if it supports the -efi-boot option
+		$genisoimagepath --help 2> tmpgen.txt
+		grep "efi-boot" tmpgen.txt > /dev/null 2>&1
+		if [ "$?" = "0" ]; then
+		    break
+		fi
+	    fi
+	    noefiboot=1
+	    if [ "$havexorrisofs" = "1" ]; then
+		export GENISOIMAGE="xorrisofs"
+		export MKISOFS="xorrisofs"
+		$dialogpath --no-shadow --title "UEFI Booting Not Supported" --msgbox "\nRestore discs created by this script on this distribution will NOT boot on UEFI systems, due to the 'xorrisofs' version not supporting it. They will boot on traditional BIOS-based systems.\n\nIf UEFI booting is required, you can create this type of restore disc from the IFL Boot Disk instead.\n\n                  Press <Enter> to continue" 15 65 2> /dev/null
+		break
+	    elif [ "$havegenisoimage" = "1" ]; then
+		$dialogpath --no-shadow --title "UEFI Booting Not Supported" --msgbox "\nRestore discs created by this script on this distribution will NOT boot on UEFI systems, due to the 'genisoimage' version not supporting it. They will boot on traditional BIOS-based systems.\n\nIf UEFI booting is required, try installing the 'xorriso' package to see if that resolves the issue. If not, you can create this type of restore disc from the IFL Boot Disk instead.\n\n                  Press <Enter> to continue" 17 65 2> /dev/null
+		break
+	    else
+		# can't run without one of them
+		criticalfilemissing=1
+		$dialogpath --no-shadow --title "Genisoimage or Xorrisofs Utility Not Installed" --msgbox "\nNeither the 'genisoimage' or 'xorrisofs' utilities are installed. One of the two is required for burning restore discs. This can usually be corrected by installing either the 'xorriso' package, or the 'genisoimage' package.\n\nIf this is a problem, you can also create restore discs with existing image files from the IFL Boot Disk.\n\n                  Press <Enter> to continue" 15 62 2> /dev/null
+		break
+	    fi
+	done
+	rm tmpgen.txt 2> /dev/null
+    fi
+fi
+
+while [ 0 ]; do
+    if [ "$criticalfilemissing" = "1" ]; then break; fi
+    if [ "$burner" != "" ]; then
+	if [ ! -e $burner ]; then
+	    burner=""; dvdrw=""; dvdrwtext=""; dvdrwmenutext="None selected"
+	fi
+    fi
+
+    if [ -f burnfiles.txt ]; then
+	for i in `seq 0 250`
+	do
+	    ftb[$i]=""
+	done
+	nftb=0
+	while read line || [ -n "$line" ]
+	do
+	    if [ "$line" != "" ] && [ "$line" != " " ]; then
+		ftb[$nftb]=$line
+		let nftb=nftb+1
+    	    fi
+	done < "burnfiles.txt"
+    else
+	nftb=0
+    fi
+
+    if [ -f /tbu/utility/running ] && [ -f /tbu/utility/iflnet ]; then
+        $dialogpath --no-shadow --title  "Burn Restore Disc" --menu "This menu is for creating bootable IFL restore discs with EXISTING image files, which are typically located on a hard drive or network share. For additional information, please see the KB article at the URL shown below.\n\nhttps://www.terabyteunlimited.com/kb/article.php?id=593\n\nOptical Drive:   $dvdrwmenutext\nVolume Name:     $volname\nFiles to Burn:   $nftb (max = $maxftb)\n \n" 25 80 9 \
+	"Exit Menu" "" \
+	"Select optical drive" "" \
+	"Mount drive or partition" "" \
+	"Mount network shares" "" \
+	"List file(s) to burn" "" \
+	"Specify file(s) to burn" "" \
+	"Volume Name" "" \
+	"Restore disc settings" "" \
+	"Burn restore disc" "" 2> /tmp/BURNmselect
+    elif [ -f /tbu/utility/running ]; then
+        $dialogpath --no-shadow --title  "Burn Restore Disc" --menu "This menu is for creating bootable IFL restore discs with EXISTING image files, which are typically located on a hard drive or network share. For additional information, please see the KB article at the URL shown below.\n\nhttps://www.terabyteunlimited.com/kb/article.php?id=593\n\nOptical Drive:   $dvdrwmenutext\nVolume Name:     $volname\nFiles to Burn:   $nftb (max = $maxftb)\n \n" 24 80 8 \
+	"Exit Menu" "" \
+	"Select optical drive" "" \
+	"Mount drive or partition" "" \
+	"List file(s) to burn" "" \
+	"Specify file(s) to burn" "" \
+	"Volume Name" "" \
+	"Restore disc settings" "" \
+	"Burn restore disc" "" 2> /tmp/BURNmselect
+    else
+        $dialogpath --no-shadow --title  "Burn Restore Disc" --menu "\nThis menu is for creating bootable IFL restore discs with EXISTING image files, which are typically located on a hard drive or network share. For additional information, please see the KB article at the URL shown below.\n\nhttps://www.terabyteunlimited.com/kb/article.php?id=593\n\nOptical Drive:   $dvdrwmenutext\nVolume Name:     $volname\nFiles to Burn:   $nftb (max = $maxftb)\n \n" 25 80 7 \
+	"Exit Menu" "" \
+	"Select optical drive" "" \
+	"List file(s) to burn" "" \
+	"Specify file(s) to burn" "" \
+	"Volume Name" "" \
+	"Restore disc settings (runs setup)" "" \
+	"Burn restore disc" "" 2> /tmp/BURNmselect
+    fi
+    if [ ! "$?" = "0" ]; then 
+	rm -f /tmp/BURNmselect 2> /dev/null
+	break
+    fi
+
+    BURNmselect=`cat /tmp/BURNmselect`
+    rm /tmp/BURNmselect 2> /dev/null
+
+    if [ "$BURNmselect" = "Exit Menu" ]; then
+	break
+    elif [ "$BURNmselect" = "Select optical drive" ]; then
+	get_optical_drives
+	# return to menu if no optical drives available
+	if [ "$ndvdrw" = "0" ]; then
+	    $dialogpath --no-shadow --title "No Optical Drives Detected" --msgbox "\n     No optical drives were detected on this system\n\n                Press <Enter> to continue" 9 60 2> /dev/null
+	else
+	    # display menu to select optical drive
+	    menutext=""
+	    for i in `seq 1 $ndvdrw`
+	    do
+    		menutext="$menutext${dvdrwdesc[$i]}\n"
+	    done
+	    let nmenuitems=$ndvdrw+1
+	    let menuheight=2*$nmenuitems+11
+	    if [ "$menuheight" -gt "25" ]; then menuheight=25; fi
+	    $dialogpath --no-shadow --title  "Select Optical Drive" --menu "\nSelect an optical drive to burn restore disc. Please note that CD-R and CD-RW media are not supported.\n\n$menutext \n" $menuheight 70  $nmenuitems \
+	    "Exit Menu" "" \
+	    $dvdrwlist  2> /tmp/DVDselect
+	    if [ "$?" != "0" ]; then
+		rm -f /tmp/DVDselect 2> /dev/null
+	    else
+		DVDselect=`cat /tmp/DVDselect`
+		rm /tmp/DVDselect 2> /dev/null
+		if [ "$DVDselect" != "Exit Menu" ]; then
+		    for i in `seq 1 $ndvdrw`
+		    do
+			if [ "$DVDselect" = "${dvdrwarraytext[$i]}" ]; then
+			    burner=$DVDselect
+			    dvdrwtext=${dvdrwarraytext[$i]}
+			    dvdrw=${dvdrwarray[$i]}
+			    dvdrwmenutext=${dvdrwselectedtext[$i]}
+			    break
+			fi
+		    done
+		fi
+	    fi
+	fi
+    elif [ "$BURNmselect" = "Mount drive or partition" ]; then
+	/usr/bin/dpmount
+    elif [ "$BURNmselect" = "Mount network shares" ]; then
+	/usr/bin/sharemount
+    elif [ "$BURNmselect" = "List file(s) to burn" ]; then
+	if [ -f burnfiles.txt ]; then
+	    $dialogpath --no-shadow --exit-label OK --title "Files to Burn" --textbox burnfiles.txt 20 80 2> /dev/null
+	else
+	    $dialogpath --no-shadow --title "No Files Specified" --msgbox "\nNo files to burn have been specified. Select the 'Specify file(s) to burn' item to create/edit the burnfiles.txt file in the current directory.\n\nAlternatively, you can create the file burnfiles.txt manually before running this script. Each line should be the complete path to an image file (one file path per line). \n\n                    Press <Enter> to continue" 15 70 2> /dev/null
+	fi
+    elif [ "$BURNmselect" = "Specify file(s) to burn" ]; then
+	nanopath=`which nano 2> /dev/null`
+	if [ "$?" != "0" ]; then
+	    $dialogpath --no-shadow --title "Nano Editor Not Installed" --msgbox "\nThe 'nano' text editor required by this script to edit the burnfiles.txt file is not currently installed. This can usually be corrected by installing the 'nano' package.\n\nIf 'nano' is not available on this distribution, you can create/edit the file burnfiles.txt in the current directory with another text editor. Each line in the file should be the complete path to an image file.\n\n                  Press <Enter> to continue" 16 65 2> /dev/null
+	else
+	    $dialogpath --no-shadow --yes-label "OK" --no-label "Cancel"  --title "Specify Files To Burn" --yesno "\nPress <Enter> to start the 'nano' text editor and view/edit the file burnfiles.txt in the current directory. Each line in this file should be the complete path to an image file to burn.\n\nWhen finished editing, press <Ctrl+O> then <Enter> to save changes, then <Ctrl+X> to exit.\n\nNote: Max files supported per disc = $maxftb\n \n" 14 70 2> /dev/null
+	    if [ "$?" = "0" ]; then
+		$nanopath ./burnfiles.txt
+	    fi
+	fi
+    elif [ "$BURNmselect" = "Volume Name" ]; then
+	$dialogpath --no-shadow --max-input 32 --title "Set Volume Name" --inputbox "\nEnter the desired volume name for the restore disc in the text box below. Maximum length is 32 characters, and spaces are not supported. Any spaces entered will be replaced with an underscore.\n\nCurrent Volume Name:  $volname\n \n" 15 74  2> /tmp/GETvname
+	    if [ "$?" != "0" ]; then
+		rm /tmp/GETvname 2> /dev/null
+	    else
+		newvolname=`cat /tmp/GETvname`
+		rm /tmp/GETvname 2> /dev/null
+		if [ "$newvolname" != "" ]; then
+		    newvolnamelen=${#newvolname}
+		    let newvolnamelen=newvolnamelen-1
+		    volname=""; underscore="_"
+		    for i in `seq 0 $newvolnamelen`
+		    do
+			if [ "${newvolname:$i:1}" = " " ]; then
+			    volname="$volname$underscore"
+			else
+			    volname="$volname${newvolname:$i:1}"
+			fi
+		    done
+		fi
+	    fi
+    elif [ "$BURNmselect" = "Restore disc settings" ]; then
+	/usr/bin/restore-menu
+    elif [ "$BURNmselect" = "Restore disc settings (runs setup)" ]; then
+	./setup
+	echo "Press <Enter> to continue"
+	read xyz
+    elif [ "$BURNmselect" = "Burn restore disc" ]; then
+	# check that drive has been select and still there
+	if [ "$burner" != "" ] && [ -e $burner ]; then
+		check_filestoburn
+		if [ "$?" = "0" ]; then
+		    $dialogpath --no-shadow --infobox "\n       Please wait..." 5 30 2> /dev/null
+		    umount $burner 2> /dev/null
+		    eject $burner 2> /dev/null
+		    sleep 1
+		    $dialogpath --no-shadow --yes-label "OK" --no-label "Cancel"  --title "Insert Optical Disc" --yesno "\nInsert writable optical disc into drive /dev/$dvdrw. Close the tray if not motorized.\n\nWARNING: All data on the optical disc WILL BE ERASED without further warning.\n\nPress <Enter> when ready, or select <Cancel> to cancel the operation. \n\n" 14 60 2> /dev/null
+		    if [ "$?" = "0" ]; then
+			sdparm --command=load $burner > /dev/null 2>&1
+			loadtime=0; loadfail=0
+			while [ 0 ]
+			do
+			    $dialogpath --no-shadow --infobox "\n   Waiting for drive to come ready (20 sec timeout)\n\n                   Time elapsed = $loadtime" 7 57 2> /dev/null
+			    sleep 1
+			    sdparm --command=ready $burner > /dev/null 2>&1
+			    if [ "$?" = "0" ]; then
+				break
+			    else
+				let loadtime=loadtime+1
+				if [ "$loadtime" -ge "20" ]; then
+				    loadfail=1
+				    break
+				fi
+			    fi
+			done
+			if [ "$loadfail" = "0" ]; then
+			    $dialogpath --no-shadow --infobox "\n          Drive has come ready. Please wait..." 5 57 2> /dev/null
+			    sleep 5
+			    umount $burner 2> /dev/null
+			    sleep 2
+			    mount | grep $burner > /dev/null
+			    if [ "$?" != "0" ]; then
+				clear; echo "Now attemtping to run 'growisofs' command to burn specified file(s):"; cat burnfiles.txt; echo
+				if [ "$noefiboot" = "0" ]; then
+				    growcommand="$growisofspath -Z $burner -V $volname -l -R -r -J -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot $efibootoption  boot/grub/efi.img -no-emul-boot cdboot/"
+				else
+				    growcommand="$growisofspath -Z $burner -V $volname -l -R -r -J -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table cdboot/"
+				fi
+				case $nftb in
+				    1)
+				    $growcommand "${ftb[0]}";;
+				    2)
+				    $growcommand "${ftb[0]}" "${ftb[1]}";;
+				    3)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}";;
+				    4)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}";;
+				    5)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}";;
+				    6)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}";;
+				    7)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}";;
+				    8)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}";;
+				    9)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}";;
+				    10)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}";;
+				    11)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}";;
+				    12)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}";;
+				    13)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}";;
+				    14)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}";;
+				    15)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}";;
+				    16)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}";;
+				    17)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}";;
+				    18)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}";;
+				    19)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}" "${ftb[18]}";;
+				    20)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}" "${ftb[18]}" "${ftb[19]}";;
+				    21)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}" "${ftb[18]}" "${ftb[19]}" "${ftb[20]}";;
+				    22)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}" "${ftb[18]}" "${ftb[19]}" "${ftb[20]}" "${ftb[21]}";;
+				    23)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}" "${ftb[18]}" "${ftb[19]}" "${ftb[20]}" "${ftb[21]}" "${ftb[22]}";;
+				    24)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}" "${ftb[18]}" "${ftb[19]}" "${ftb[20]}" "${ftb[21]}" "${ftb[22]}" "${ftb[23]}";;
+				    25)
+				    $growcommand "${ftb[0]}" "${ftb[1]}" "${ftb[2]}" "${ftb[3]}" "${ftb[4]}" "${ftb[5]}" "${ftb[6]}" "${ftb[7]}" "${ftb[8]}" "${ftb[9]}" "${ftb[10]}" "${ftb[11]}" "${ftb[12]}" "${ftb[13]}" "${ftb[14]}" "${ftb[15]}" "${ftb[16]}" "${ftb[17]}" "${ftb[18]}" "${ftb[19]}" "${ftb[20]}" "${ftb[21]}" "${ftb[22]}" "${ftb[23]}" "${ftb[24]}";;
+				    *)
+				    ;;
+				esac
+				sleep 3
+				eject $burner
+				echo "Press Enter to continue"
+				read xyz
+			    else
+				$dialogpath --no-shadow --yes-label "Unmount" --no-label "Cancel"  --title "Optical Drive Mounted" --yesno "\nThe selected optical drive ($burner) is currently mounted. The drive must be unmounted before creating the restore disc.\n\n               Press <Enter> to umount now\n\n" 10 65 2> /dev/null
+				if [ "$?" = "0" ]; then
+				    umount $burner 2> /dev/null
+				    sleep 2
+				    mount | grep $burner > /dev/null
+				    if [ "$?" != "0" ]; then
+					$dialogpath --no-shadow --title "Optical Drive Successfully Unmounted" --msgbox "\nThe selected drive ($burner) has been successully unmounted.\n\nYou should now be able to re-select 'Burn restore disc' from the menu, and proceed to burn the disc without further interference from the drive getting mounted.\n\n                   Press <Enter> to continue" 13 70 2> /dev/null
+				    else
+					$dialogpath --no-shadow --title "Optical Drive Could Not Be Unmounted" --msgbox "\nThe selected drive ($burner) could not be unmounted. The drive may be in use by a file manager window, a terminal window, etc. Please unmount the drive manually.\n\n                   Press <Enter> to continue" 11 65 2> /dev/null
+				    fi
+				fi
+			    fi
+			else
+			    umount $burner 2> /dev/null
+			    eject $burner 2> /dev/null
+			    # sdparm --command=unlock $burner > /dev/null 2>&1
+			    # sdparm --command=eject $burner > /dev/null 2>&1
+			    $dialogpath --no-shadow --title "Optical Drive Failed To Come Ready" --msgbox "\nThe selected drive ($burner) failed to come ready after 20 seconds. The drive tray may be open, or may not contain valid media. Please check the drive and retry.\n\n                   Press <Enter> to continue" 11 65 2> /dev/null
+			fi
+		    fi
+		fi
+	else
+	    $dialogpath --no-shadow --title "No Optical Drive Selected" --msgbox "\nNo optical drive has been selected, or it has been disconnected.\n\n                   Press <Enter> to continue" 9 70 2> /dev/null
+	fi
+    fi
+done
+}
+
+check_filestoburn() {
+
+    if [ "$nftb" = "0" ] || [ ! -f burnfiles.txt ]; then
+	$dialogpath --no-shadow --title "No Files Specified" --msgbox "\nNo files to burn have been specified. Select the 'Specify file(s) to burn' item to create/edit the burnfiles.txt file in the current directory.\n\nAlternatively, you can create the file burnfiles.txt manually before running this script. Each line should be the complete path to an image file (one file path per line). \n\n                    Press <Enter> to continue" 15 70 2> /dev/null
+	return 1
+    elif [ "$nftb" -gt "$maxftb" ]; then
+	$dialogpath --no-shadow --title "Too Many Files Specified" --msgbox "\nThe limit of $maxftb files was exceeded in burnfiles.txt (currently $nftb files are listed).\n\n                    Press <Enter> to continue" 10 70 2> /dev/null
+	return 2
+    else
+	echo >  locateburnfiles.txt
+	echo "Checking that image file(s) to burn can be located..." >> locateburnfiles.txt
+	echo >> locateburnfiles.txt
+
+	fnf=0
+	for i in `seq 1 $nftb`
+	do
+	    let j=i-1
+	    if [ ! -f "${ftb[$j]}" ]; then
+		echo "NOT found: ${ftb[$j]}" >> locateburnfiles.txt
+		let fnf=fnf+1
+	    else
+		echo "Found:     ${ftb[$j]}" >> locateburnfiles.txt
+	    fi
+	done
+	echo >> locateburnfiles.txt
+	if [ "$fnf" = "0" ]; then
+	    let bheight=10+nftb
+	    if [ "$bheight" -gt "25" ]; then bheight=25; fi
+	    echo "All files found. Press <Enter> to continue." >> locateburnfiles.txt
+	    $dialogpath --no-shadow --exit-label OK --title "All Files Found" --textbox locateburnfiles.txt $bheight 80 2> /dev/null
+	    return 0
+	else
+	    let bheight=11+nftb
+	    if [ "$bheight" -gt "25" ]; then bheight=25; fi
+	    echo "$fnf file(s) NOT found. Please see above, and then check and correct the path" >> locateburnfiles.txt
+	    echo "specified. Press <Enter> to continue." >> locateburnfiles.txt
+	    $dialogpath --no-shadow --exit-label OK --title "$fnf File(s) NOT Found" --textbox locateburnfiles.txt $bheight 80 2> /dev/null
+	    return 3
+	fi
+    fi
+}
+
+####################### Script Execution Starts Here #############################
+
+if [ "$dialog" = ""  ]; then 
+	dialog="dialog"
+fi
+
+# check for required programs
+dialogpath=`which $dialog 2> /dev/null`
+
+if [ "$?" != "0" ]; then
+    echo "The $dialog program is required by this script to display the menus. This"
+    echo "can usually be corrected by installing the '$dialog' package."
+    echo
+    echo "Exiting script..."
+    echo
+    exit 1
+fi
+
+# check RAM (should have 768 MiB or more
+iflram=(`free -m | grep Mem:`)
+
+if [ "${iflram[1]}" -lt "749" ] && [ -f /tbu/utility/running ]; then
+    # this is the boot disk so 'dialog' is known to be there
+    $dialogpath --title "Not Enough RAM To Create Boot Media" --no-shadow --infobox "\nERROR: This system has less than 768 MiB of RAM. Creating IFL boot media from the running boot disk requires a minimum of 768 MiB of RAM.\n\n              Press <Enter> to exit this script\n \n" 9 65 2> /dev/null
+    read xyz
+    clear
+    exit 1
+fi
+
+if [ -f /tbu/utility/running ]; then
+    cd /tbu
+    workingdir=/tbu
+    if [ ! -d /tbu/iflbuild ]; then
+	mkdir -p /tbu/iflbuild
+    fi
+elif [ "$0" != "./iflbuild" ]; then
+	echo "This script must be run from the IFL directory"
+	echo
+	exit 1
+else
+    # check running as root
+    userid=`id -u`
+    if [ ! "$userid" = "0" ]; then
+	echo "This script must be run as root...exiting"
+	echo
+	exit 1
+    fi
+    # get directory owner and group 
+    workingdir=`pwd`
+    ownerid=`stat -c %U $workingdir`
+    groupid=`stat -c %G $workingdir`
+    if [ "$ownerid" = "root" ]; then ownerid=0; fi
+    if [ "$groupid" = "root" ]; then groupid=0; fi
+    if [ "$workingdir" = "/" ]; then
+	echo "This script cannot be run from the / directory...exiting"
+	echo
+	exit 1
+    fi
+    # check for read/write access and running on Linux fs
+    tf1=0;tf2=0
+    for i in `seq 1 5000`
+    do
+	if [ "$tf1" = "0" ]; then
+    	    if [ ! -f t$i ] && [ ! -d t$i ]; then tf1=t$i; fi
+	elif [ "$tf2" = "0" ]; then
+    	    if [ ! -f t$i ] && [ ! -d t$i ]; then tf2=t$i; fi
+	else
+    	    break
+	fi
+    done
+    if [ ! "$tf1" = "0" ] && [ ! "$tf2" = "0" ]; then
+	touch $tf1 2> /dev/null
+	if [ ! -e $tf1 ]; then
+    	    echo "Unable to create a test file. This indicates that this partition"
+    	    echo "is mounted read only. To work with the IFL disk from Linux, the"
+    	    echo "zip archive must be extracted on a *Linux* partition, and that"
+    	    echo "partition must be mounted with read/write privileges...exiting"
+    	    echo
+    	    exit 1
+	fi
+	chmod +x $tf1
+	chmod -x $tf1
+	cp $tf1 $tf2
+	if [ -x $tf2 ]; then
+    	    rm $tf1; rm $tf2
+    	    echo "This script must be run on a Linux file system. It appears to be"
+    	    echo "either FAT/FAT32 or NTFS. Please extract the IFL zip archive on"
+    	    echo "a Linux partition (ext2/3/4 or reiserfs)...exiting"
+    	    echo
+    	    exit 1
+	fi
+	rm $tf1; rm $tf2
+    fi
+fi
+
+while [ 0 ]; do
+    if [ -f /tbu/utility/running ]; then
+	iflbootmediamode="Boot Disk Mode"
+	workingdir="/tbu"
+	makeHDDpath="makeHDD"
+	if [ ! -f /tbu/utility/priv ]; then
+	    $dialogpath --no-shadow --title  "Select IFL Boot Media Mode" --menu "Select either Boot Disk Mode or Zip File Mode depending on what you would like to do (see descriptions below):\n\nBoot Disk Mode: (does not require an IFL zip file)\n  Burn IFL restore discs with existing image files\n  Install IFL restore disc to removable drive\n  Install (copy) existing IFL boot media to a drive or partition\n\nZip File Mode: (requires an IFL zip file to be copied to boot disk)\n  Create IFL boot media (similar to Linux distribution)\n  Install custom/default IFL boot media to a drive or partition\n  Burn custom/default IFL ISO files to optical media\n\nSee the KB article at the URL shown below for additional information:\nhttps://www.terabyteunlimited.com/kb/article.php?id=545\n \n" 25 78 3 \
+	    "Exit Menu" "" \
+	    "Boot Disk Mode" "" \
+	    "Zip File Mode" "" 2> /tmp/BMMODEmselect
+	    if [ "$?" != "0" ]; then 
+		rm -f /tmp/BMMODEmselect 2> /dev/null
+		break
+	    else
+		BMMODEmselect=`cat /tmp/BMMODEmselect`
+		rm /tmp/BMMODEmselect 2> /dev/null
+		if [ "$BMMODEmselect" = "Exit Menu" ]; then
+		    break
+		elif [ "$BMMODEmselect" = "Boot Disk Mode" ]; then
+		    iflbootmediamode="Boot Disk Mode"
+		    workingdir="/tbu"
+		    makeHDDpath="makeHDD"
+		else
+		    iflbootmediamode="Zip File Mode"
+		    workingdir="/tbu/iflbuild"
+		    makeHDDpath="./makeHDD"
+		fi
+	    fi
+	fi
+
+	    if [ "$iflbootmediamode" = "Zip File Mode" ]; then
+		currentzipfile=""
+		zipextracted=0
+		while [ 0 ]; do
+		    fixzipnames
+		    getziplist
+		    checkextracted_running
+		    menutext="\nIFL zip files currently available: $nzips"
+		    for i in `seq 1 $nzips`
+		    do
+			menutext="$menutext\n  ${ziparray[$i]} = ${ziparraymenutext[$i]}"
+		    done
+		    if [ "$currentzipfile" = "" ]; then
+			extractedtext="\n\nIFL zip file currently extracted: None \n \n"
+			menutext="$menutext$extractedtext"
+		    else
+			extractedtext="\n\nIFL zip file currently extracted: $currentzipfile \n \n"
+			menutext="$menutext$extractedtext"
+		    fi
+
+		    if [ "$zipextracted" = "1" ] && [ "$nzips" != "0" ]; then
+			$dialogpath --no-shadow --title  "Create IFL Boot Media - Zip File Mode" --menu "$menutext" 23 73 9 \
+			"Exit Menu" "" \
+			"Install IFL to removable drive" "" \
+			"Run makeHDD from command line" "" \
+			"Run makeISO to create custom ISO file" "" \
+			"View/Modify ifl-custom.ini for custom versions" "" \
+			"Retrieve IFL zip file(s) from drive/partition" "" \
+			"Select and extract IFL zip file" "" \
+			"Delete extracted IFL files from /tbu/iflbuild" "" \
+			"Burn ISO file to optical disc" "" 2> /tmp/IFLBselect
+			if [ ! "$?" = "0" ]; then 
+			    rm -f /tmp/IFLBselect 2> /dev/null
+			    break
+			fi
+		    elif [ "$zipextracted" = "1" ] && [ "$nzips" = "0" ]; then
+			$dialogpath --no-shadow --title  "Create IFL Boot Media - Zip File Mode" --menu "$menutext" 22 73 8 \
+			"Exit Menu" "" \
+			"Install IFL to removable drive" "" \
+			"Run makeHDD from command line" "" \
+			"Run makeISO to create custom ISO file" "" \
+			"View/Modify ifl-custom.ini for custom versions" "" \
+			"Retrieve IFL zip file(s) from drive/partition" "" \
+			"Delete extracted IFL files from /tbu/iflbuild" "" \
+			"Burn ISO file to optical disc" "" 2> /tmp/IFLBselect
+			if [ ! "$?" = "0" ]; then 
+			    rm -f /tmp/IFLBselect 2> /dev/null
+			    break
+			fi
+		    elif [ "$zipextracted" = "0" ] && [ "$nzips" != "0" ]; then
+			infotext="An IFL zip file must be selected and extracted before you can create IFL boot media."
+			menutext="$menutext$infotext \n \n"
+			$dialogpath --no-shadow --title  "Create IFL Boot Media - Zip File Mode" --menu "$menutext" 20 73 3 \
+			"Exit Menu" "" \
+			"Retrieve IFL zip file(s) from drive/partition" "" \
+			"Select and extract IFL zip file" "" 2> /tmp/IFLBselect
+			if [ ! "$?" = "0" ]; then 
+			    rm -f /tmp/IFLBselect 2> /dev/null
+			    break
+			fi
+		    elif [ "$zipextracted" = "0" ] && [ "$nzips" = "0" ]; then
+			infotext="At least one IFL zip file must be retrieved (copied from a drive/partition) before you can create IFL boot media."
+			menutext="$menutext$infotext \n \n"
+			$dialogpath --no-shadow --title  "Create IFL Boot Media - Zip File Mode" --menu "$menutext" 17 73 2 \
+			"Exit Menu" "" \
+			"Retrieve IFL zip file(s) from drive/partition" "" 2> /tmp/IFLBselect
+			if [ ! "$?" = "0" ]; then 
+			    rm -f /tmp/IFLBselect 2> /dev/null
+			    break
+			fi
+		    fi
+		    IFLBselect=`cat /tmp/IFLBselect`
+		    rm /tmp/IFLBselect 2> /dev/null
+
+		    if [ "$IFLBselect" = "Retrieve IFL zip file(s) from drive/partition" ]; then
+			retrieve_zip_files
+		    elif [ "$IFLBselect" = "Select and extract IFL zip file" ]; then
+			selectzipfile
+		    elif [ "$IFLBselect" = "Delete extracted IFL files from /tbu/iflbuild" ]; then
+			$dialogpath --no-shadow --defaultno --yes-label "OK" --no-label "Cancel"  --title "Confirm Deletion Of Extracted Files" --yesno "\nIf finished creating IFL boot media for this session, select <OK> to delete the extracted files from the /tbu/iflbuild directory. Deleting these files will free up RAM for other operations. Select <Cancel> to keep the files.\n\n" 10 65 2> /dev/null
+			if [ "$?" = "0" ]; then
+			    cd /tbu/iflbuild
+			    rm -r * 2> /dev/null
+			    cd /tbu
+			fi
+		    elif [ "$IFLBselect" = "Install IFL to removable drive" ]; then
+			cd $workingdir
+			ibootmediatype="Full"
+			ibootmediatypeswitch=""
+			run_makeHDD_menu
+		    elif [ "$IFLBselect" = "Run makeHDD from command line" ]; then
+			cd $workingdir
+			run_makeHDD_manual
+		    elif [ "$IFLBselect" = "Run makeISO to create custom ISO file" ]; then
+			cd $workingdir
+			./makeISO
+			if [ "$?" = "1" ]; then
+			    echo "ERROR Encountered. Press <Enter> to continue"
+			    read xyz
+			else
+			    echo "Press <Enter> to continue"
+			    read xyz
+			fi
+		    elif [ "$IFLBselect" = "View/Modify ifl-custom.ini for custom versions" ]; then
+			do_ifl_ini
+		    elif [ "$IFLBselect" = "Burn ISO file to optical disc" ]; then
+			cd $workingdir
+			burn_iso
+		    elif [ "$IFLBselect" = "Exit Menu" ]; then
+			break
+		    fi
+		    cd $workingdir
+		done
+	    elif [ "$iflbootmediamode" = "Boot Disk Mode" ]; then
+		while [ 0 ]; do
+		    $dialogpath --no-shadow --title  "Create IFL Boot Media - Boot Disk Mode" --menu "\nPlease select an item from the menu below:\n \n" 16 73 6 \
+		    "Exit Menu" "" \
+		    "Run makeHDD from command line (copy IFL boot media)" "" \
+		    "Install IFL restore disc to removable drive" "" \
+		    "Burn optical restore disc with existing image files" "" \
+		    "Restore disc settings" "" \
+		    "Burn ISO file to optical disc" "" 2> /tmp/IFLBselect
+		    if [ ! "$?" = "0" ]; then
+			rm -f /tmp/IFLBselect 2> /dev/null
+			if [ -f /tbu/utility/priv ]; then
+			    clear
+			    exit 0
+			else
+			    break
+			fi
+		    fi
+		    IFLBselect=`cat /tmp/IFLBselect`
+		    rm /tmp/IFLBselect 2> /dev/null
+
+		    if [ "$IFLBselect" = "Install IFL restore disc to removable drive" ]; then
+			cd $workingdir
+			ibootmediatype="Restore"
+			ibootmediatypeswitch="/r"
+			run_makeHDD_menu
+		    elif [ "$IFLBselect" = "Run makeHDD from command line (copy IFL boot media)" ]; then
+			cd $workingdir
+			run_makeHDD_manual
+		    elif [ "$IFLBselect" = "Burn ISO file to optical disc" ]; then
+			cd $workingdir
+			burn_iso
+		    elif [ "$IFLBselect" = "Burn optical restore disc with existing image files" ]; then
+			cd $workingdir
+			burn_restore_disc
+		    elif [ "$IFLBselect" = "Restore disc settings" ]; then
+			/usr/bin/restore-menu
+		    elif [ "$IFLBselect" = "Exit Menu" ]; then
+			if [ -f /tbu/utility/priv ]; then
+			    clear
+			    exit 0
+			else
+			    break
+			fi
+		    fi
+		    cd $workingdir
+		done
+	    fi
+
+    else
+	iflbootmediamode="Distro Mode"
+	makeHDDpath="./makeHDD"
+	$dialogpath --no-shadow --title  "Create IFL Boot Media - Distro Mode" --menu "\nPlease select an item from the menu below:\n \n" 19 73 9 \
+	"Exit Menu" "" \
+	"Install IFL to removable drive" "" \
+	"Install IFL restore disc to removable drive" "" \
+	"Run makeHDD from command line" "" \
+	"Run makeISO to create custom ISO file" "" \
+	"Run makeGRUB to add IFL to the Grub boot menu" "" \
+	"View/Modify ifl-custom.ini for custom versions" "" \
+	"Burn ISO file to optical disc" "" \
+	"Burn optical restore disc with existing image files" "" 2> /tmp/IFLBselect
+	if [ ! "$?" = "0" ]; then 
+	    rm -f /tmp/IFLBselect 2> /dev/null
+	    break 
+	fi
+	IFLBselect=`cat /tmp/IFLBselect`
+	rm /tmp/IFLBselect 2> /dev/null
+
+	if [ "$IFLBselect" = "Install IFL to removable drive" ]; then
+	    cd $workingdir
+	    ibootmediatype="Full"
+	    ibootmediatypeswitch=""
+	    run_makeHDD_menu
+	elif [ "$IFLBselect" = "Install IFL restore disc to removable drive" ]; then
+	    cd $workingdir
+	    ibootmediatype="Restore"
+	    ibootmediatypeswitch="/r"
+	    run_makeHDD_menu
+	elif [ "$IFLBselect" = "Run makeHDD from command line" ]; then
+	    cd $workingdir
+	    run_makeHDD_manual
+	elif [ "$IFLBselect" = "Run makeISO to create custom ISO file" ]; then
+	    cd $workingdir
+	    ./makeISO
+	    if [ "$?" = "1" ]; then
+		echo "ERROR Encountered. Press <Enter> to continue"
+		read xyz
+	    else
+		echo "Press <Enter> to continue"
+		read xyz
+	    fi
+	elif [ "$IFLBselect" = "View/Modify ifl-custom.ini for custom versions" ]; then
+	    do_ifl_ini
+	elif [ "$IFLBselect" = "Run makeGRUB to add IFL to the Grub boot menu" ]; then
+	    cd $workingdir
+	    ./makeGRUB
+	elif [ "$IFLBselect" = "Burn ISO file to optical disc" ]; then
+	    cd $workingdir
+	    burn_iso
+	elif [ "$IFLBselect" = "Burn optical restore disc with existing image files" ]; then
+	    if [ -f /tbu/utility/running ]; then cd /tbu; else cd $workingdir; fi
+	    burn_restore_disc
+	elif [ "$IFLBselect" = "Exit Menu" ]; then
+	    break
+	fi
+	cd $workingdir
+    fi
+done
+
+
+if [ -f /tbu/utility/running ]; then 
+    cd /tbu
+else 
+    cd $workingdir
+    # chown all files and directories to owner:group
+    chown -R $ownerid:$groupid util 2> /dev/null
+    chown -R $ownerid:$groupid help 2> /dev/null
+    chown -R $ownerid:$groupid wireless 2> /dev/null
+    chown -R $ownerid:$groupid scripts 2> /dev/null
+    chown -R $ownerid:$groupid iscsi 2> /dev/null
+    chown -R $ownerid:$groupid cdboot 2> /dev/null
+    chown -R $ownerid:$groupid pxe 2> /dev/null
+    chown -R $ownerid:$groupid grub 2> /dev/null
+    chown -R $ownerid:$groupid tbosdtfiles 2> /dev/null
+    chown $ownerid:$groupid *
+fi
+clear

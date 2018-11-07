@@ -1,0 +1,119 @@
+Information on the Linux edd module:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This file is an explanation of the Linux edd module as it applies to Image for
+Linux (IFL). Please note that the entire edd issue is ONLY applicable when 
+running IFL from a Linux distribution, and only then when RESTORING an image to
+an empty hard drive (meaning a drive with no partitions on it). If running IFL 
+from the IFL boot media, edd is always available and is not an issue at all.
+
+This issue can come up when you run the setup script (with the /edd option) to 
+set up IFL on a Linux distribution. The setup script checks the status of the 
+edd module on your system, and will refer you to this file if it detects a 
+problem. The reason that setup checks for edd is that while most distributions 
+include it in their kernel, some (most notably Ubuntu) do not. In addition, 
+even distributions that do include edd do not usually load the edd module 
+automatically on boot. On most distros that can be easily taken care of as 
+described below.
+
+The edd module is a piece of code in the Linux kernel that can be either 
+enabled or disabled in the kernel configuration. Linux kernel version 2.6 is 
+required in order for IFL to recognize the edd module. If you are running a 
+kernel older than the 2.6 series, this entire discussion does not apply, and 
+edd will not be available when running IFL from your distribution.
+
+If enabled and loaded, edd will cause the /sys/firmware/edd directory to be 
+created, and that directory will contain data that IFL uses to determine the 
+correct CHS geometry for hard drives. The absence of edd will not affect the 
+creation and validation of images, but it can affect restore operations, 
+particularly when restoring to an empty hard drive (empty meaning the drive 
+currently has no partitions). Without edd, IFL will attempt to use other means
+to determine the geometry, but the result may not be correct.
+
+Determining edd status when running setup:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When running the setup script, you will get 1 of 4 possible results for the edd
+status check:
+
+1. Linux edd status 1: The edd module is available and loaded
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This indicates that the edd module is both available, and is being loaded 
+automatically on boot. This is ideally what IFL requires.
+
+
+2. Linux edd status 2: The edd module is available but not loaded on boot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This indicates that the edd module is available, but is not being loaded on 
+boot. Note that the setup script actually loads the module in this case, so if
+you were to run setup again, it would give an edd status of 1. However, on the
+next reboot, the module will not be loaded again, and running setup would again
+give an edd status of 2.
+
+Loading the edd module automatically on boot can be accomplished in a few 
+different ways. The two most common methods are quite simple, and are described
+below:
+
+a. Edit the file /etc/rc.local (or /etc/rc.d/rc.local). This file is included
+on most distributions, and is intended as a way to customize the boot process 
+to run specified commands automatically on boot. On a new installation, the 
+file will usually not be doing anything by default, and will just contain some
+text that explains what it is for.
+
+To load edd automatically from rc.local, edit the file as root, and add the
+following line after the explanatory text, but before any 'exit 0' line that
+may exist:
+
+/sbin/modprobe edd
+
+On the next reboot, edd should load automatically. 
+
+Note: On the openSUSE distro, the file /etc/init.d/boot.local is the
+equivalent of the rc.local file. However, recent releases of openSUSE
+load edd by default, so editing the file should not be required.
+
+b. Edit the file /etc/modules (most Debian-based distributions). The file 
+/etc/modules is simply a list of modules to load on boot that wouldn't 
+otherwise be loaded. If /etc/modules exists on your distribution, loading edd 
+can be accomplished by editing this file as root, and adding the line 'edd' to
+the end of the file. 
+
+On the next reboot, edd should be loaded. If /etc/modules does not exist, then
+most likely it is not supported on that particular distribution, and the 
+rc.local method described above will have to be used.
+
+
+3. Linux edd status 3: The edd module is not included in the Linux kernel
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This indicates that edd is not included in the running Linux kernel. This 
+situation cannot be changed without reconfiguring and recompiling the kernel,
+which is beyond the scope of this document. 
+
+
+4. Linux edd status 4: The edd module is not available due to old kernel
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This indicates that the running kernel is older than version 2.6, meaning that
+edd will not be available to IFL. This situation cannot be changed unless the
+kernel is upgraded to the 2.6 series.
+
+
+Addtitional information on edd:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Loading edd manually: Assumng edd is included in the kernel, the edd module
+can be loaded manually from the command line by running the following command
+as root:
+
+/sbin/modprobe edd  (/sbin/ not required if /sbin is on the root PATH)
+
+When loaded, edd will be listed by the 'lsmod' command, which lists all loaded
+kernel modules.
+
+Verifying that edd is active: If the /sys/firmware/edd directory exists, this
+means that edd is available and active. This directory will not exist if the
+edd module is not loaded.
+
+While edd is usually in the form of a loadable module, it is also possible for
+it to be compiled directly into the kernel. In this case, edd will always be
+available and there will be no need to load the module. The availablity of edd
+can always be verified by the existence of the /sys/firmware/edd directory. The
+setup script checks for that directory when determining edd status.

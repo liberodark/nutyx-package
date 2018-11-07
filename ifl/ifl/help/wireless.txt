@@ -1,0 +1,23 @@
+Using a wireless network adapter with the Image for Linux Network Boot Disk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For wireless network adapter support, the IFL Boot Disk includes:
+ - all native drivers included in the Linux kernel
+ - the wireless-tools package (iwconfig etc.)
+ - the wpa_supplicant package to support WPA/WPA2 encryption.  
+ - the ndiswrapper module and utilities that make it possible to use a 
+   Windows driver in Linux for many wireless network adapters. 
+
+As of IFL Boot Disk version LBD214EN, all network interface configuration
+is done from either the Network Configuration item on the running disk, or
+can be pre-configured from the Linux make scripts (makeISO, makeHDD, and
+makePXE) by selecting the Network Interface Settings menu item while creating
+a custom version from Linux. This includes both wired and wireless interfaces,
+as well as configuring ndiswrapper and the persistent naming feature.
+
+For this reason, all network configuration items have been removed from the
+config.txt file. In addition, it is no longer necessary to create network
+profiles, or manually edit wpa_supplicant.conf for wireless interfaces. 
+
+Please refer to the Help items available from the network interface menu 
+screens for additional information.
