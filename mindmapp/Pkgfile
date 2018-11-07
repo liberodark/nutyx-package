@@ -7,7 +7,7 @@ url="https://mindmapp.org"
 name=mindmapp
 version=0.7.15
 
-source=(https://github.com/Mindmapp/mindmapp/releases/download/v${version}/Mindmapp-${pkgver}.deb)
+source=(https://github.com/Mindmapp/mindmapp/releases/download/v${version}/Mindmapp-${version}.deb)
 
 build() {
 
