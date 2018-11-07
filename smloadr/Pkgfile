@@ -1,8 +1,8 @@
-# Depends on: unzip
+# Depends on:
 
 description="A streaming music downloader"
 packager="liberodark"
-url="https://github.com/oguzhaninan/Stacer"
+url="https://git.fuwafuwa.moe/SMLoadrDev/SMLoadr"
 
 name=smloadr
 version=1.9.4
@@ -10,8 +10,6 @@ version=1.9.4
 source=(https://www.dropbox.com/s/z7ox47axdtj13qo/SMLoadr-linux-x64_v${version}.zip)
 
 build() {
-  cd $SRC
-  unzip SMLoadr-linux-x64_v${version}.zip -d SMLoadr
   mkdir -p "PKG/usr/bin/"
   mv "SMLoadr/SMLoadr-linux-x64" "PKG/usr/bin/smloadr"
   chmod +x "${PKG}/usr/bin/smloadr"
