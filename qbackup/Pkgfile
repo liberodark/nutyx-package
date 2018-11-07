@@ -13,10 +13,10 @@ source=(https://storage-dag.iijgio.com/qualeed/downloads/qbackup/qBackup-${versi
 
 build() {
 
-cd $srcdir
+cd $name-$version
 tar xvf qBackup-${version}.tar.gz
-mkdir -p "$pkgdir/opt/qbackup/"
-cp -r "qBackup/." "$pkgdir/opt/qbackup/"
-install -vDm644 $srcdir/$name.desktop $pkgdir/usr/share/applications/$name.desktop
-install -vDm644 $srcdir/$name.png $pkgdir/usr/share/pixmaps/$name.png
+mkdir -p $PKG/opt/qbackup/
+cp -r qBackup/.  $PKG/opt/qbackup/
+install -vDm644 $name.desktop $PKG/usr/share/applications/$name.desktop
+install -vDm644 $name.png $PKG/usr/share/pixmaps/$name.png
 }
