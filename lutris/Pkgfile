@@ -1,0 +1,20 @@
+# Depends on: python
+
+description="Lutris is an open gaming platform for Linux."
+packager="liberodark"
+url="https://lutris.net/"
+
+name=lutris
+version=0.4.23
+
+source=(http://download.opensuse.org/repositories/home:/strycore/Debian_9.0/amd64/lutris_${version}_amd64.deb)
+
+run=(python)
+
+build() {
+
+ar x lutris_${version}_amd64.deb
+tar xvf data.tar.xz
+cp -r opt $PKG
+cp -r usr $PKG
+}
