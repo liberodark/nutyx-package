@@ -6,10 +6,11 @@ url="http://www.frostwire.com"
 
 name=frostwire
 version=6.7.4
+release=272
 
 run=(openjdk)
 
-source=(https://github.com/frostwire/frostwire/releases/download/frostwire-desktop-${version}-build-${pkgrel}/frostwire-${version}.noarch.tar.gz $name.desktop $name.png)
+source=(https://github.com/frostwire/frostwire/releases/download/frostwire-desktop-${version}-build-${release}/frostwire-${version}.noarch.tar.gz $name.desktop $name.png)
 
 build() {
 
