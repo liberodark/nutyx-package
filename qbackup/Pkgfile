@@ -1,0 +1,22 @@
+# Depends on: openjdk
+
+description="Cross-platform file backup"
+packager="liberodark"
+url="https://www.qualeed.com/en/qbackup/"
+
+name=qbackup
+version=1.10.0.0
+
+run=(openjdk)
+
+source=(https://storage-dag.iijgio.com/qualeed/downloads/qbackup/qBackup-${version}.tar.gz $name.desktop $name.png)
+
+build() {
+
+cd $srcdir
+tar xvf qBackup-${pkgver}.tar.gz
+mkdir -p "$PKG/opt/qbackup/"
+cp -r "qBackup/." "$pkgdir/opt/qbackup/"
+install -vDm644 $srcdir/$name.desktop $PKG/usr/share/applications/$name.desktop
+install -vDm644 $srcdir/$name.png $PKG/usr/share/pixmaps/$name.png
+}
