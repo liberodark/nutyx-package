@@ -11,7 +11,8 @@ source=(https://github.com/Mindmapp/mindmapp/releases/download/v${version}/Mindm
 
 build() {
 
-ar x Mindmapp-${pkgver}.deb
+ar x Mindmapp-${version}.deb
 tar xvf data.tar.xz
+cp -r opt $PKG
 cp -r usr $PKG
 }
