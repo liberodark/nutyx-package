@@ -12,7 +12,7 @@ source=(http://repo.steampowered.com/steam/archive/precise/steam_latest.deb)
 build() {
 
 ar x steam_latest.deb
-tar xvf data.tar.xz
+tar xvf data.tar.gz
 cp -r etc $PKG
 cp -r lib $PKG
 cp -r usr $PKG
