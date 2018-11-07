@@ -17,6 +17,6 @@ cd $srcdir
 tar xvf qBackup-${version}.tar.gz
 mkdir -p "$pkgdir/opt/qbackup/"
 cp -r "qBackup/." "$pkgdir/opt/qbackup/"
-install -vDm644 $srcdir/$name.desktop $PKG/usr/share/applications/$name.desktop
-install -vDm644 $srcdir/$name.png $PKG/usr/share/pixmaps/$name.png
+install -vDm644 $srcdir/$name.desktop $pkgdir/usr/share/applications/$name.desktop
+install -vDm644 $srcdir/$name.png $pkgdir/usr/share/pixmaps/$name.png
 }
