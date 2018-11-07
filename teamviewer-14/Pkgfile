@@ -1,0 +1,20 @@
+# Depends on: hicolor-icon-theme qt5-base qt5-declarative qt5-quickcontrols qt5-webkit qt5-x11extras
+
+description="All-In-One Software for Remote Support and Online Meetings"
+packager="liberodark"
+url="https://www.teamviewer.com/"
+
+name=teamviewer-14
+version=14.0.8346
+
+source=(https://download.teamviewer.com/download/linux/version_14x/teamviewer_amd64.deb)
+
+build() {
+
+ar x teamviewer_amd64.deb
+tar xvf data.tar.xz
+cp -r etc $PKG
+cp -r opt $PKG
+cp -r usr $PKG
+cp -r var $PKG
+}
