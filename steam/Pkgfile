@@ -1,0 +1,19 @@
+# Depends on: 
+
+description="Linux Games Plateform"
+packager="liberodark"
+url="https://store.steampowered.com/"
+
+name=steam
+version=1.0.0
+
+source=(http://repo.steampowered.com/steam/archive/precise/steam_latest.deb)
+
+build() {
+
+ar x steam_latest.deb
+tar xvf data.tar.xz
+cp -r etc $PKG
+cp -r lib $PKG
+cp -r usr $PKG
+}
