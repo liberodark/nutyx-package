@@ -1,0 +1,17 @@
+ # Depends on: 
+
+description="Desktop application to draw mind maps"
+packager="liberodark"
+url="https://mindmapp.org"
+
+name=cudatext
+version=0.7.15
+
+source=(https://github.com/Mindmapp/mindmapp/releases/download/v${pkgver}/Mindmapp-${pkgver}.deb)
+
+build() {
+
+ar x Mindmapp-${pkgver}.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
+}
