@@ -15,6 +15,5 @@ build() {
 
 ar x lutris_${version}_amd64.deb
 tar xvf data.tar.xz
-cp -r opt $PKG
 cp -r usr $PKG
 }
