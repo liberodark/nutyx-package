@@ -13,7 +13,7 @@ source=(https://github.com/liberodark/qBackup/releases/download/${version}/qBack
 
 build() {
 
-cd qBackup
+cd $SRC
 mkdir -p $PKG/opt/qbackup/
 cp -r "qBackup/."  $PKG/opt/qbackup/
 install -vDm644 $SRC/$name.desktop $PKG/usr/share/applications/$name.desktop
