@@ -1,0 +1,18 @@
+# Depends on: alsa-lib, gconf, gtk3, libxtst6, libsecret, libxss, libxtst, nss, glibc, asar
+
+description="Skype for Linux "
+packager="liberodark"
+url="http://www.skype.com/"
+
+name=skype
+version=8.33.0.41
+
+source=(https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${version}_amd64.deb)
+
+build() {
+
+ar x skypeforlinux_${version}_amd64.deb
+tar xvf data.tar.xz
+cp -r opt $PKG
+cp -r usr $PKG
+}
