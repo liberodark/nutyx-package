@@ -1,0 +1,36 @@
+name=teamspeak3
+version=3.2.3
+description="TeamSpeak is software for quality voice communication via the Internet"
+url="http://www.teamspeak.com"
+optdepends=('libpulse')
+source=(http://dl.4players.de/ts/releases/${version}/TeamSpeak3-Client-linux_amd64-${version}.run teamspeak3.desktop teamspeak3.png LICENSE)
+
+prepare() {
+  mkdir archive && cd archive
+  sh "${SRC}"/TeamSpeak3-Client-linux_amd64-${pkgver}.run --tar -xf 2>/dev/null
+
+  # Fix permissions
+  find -type d | xargs chmod 755
+  find -type f | xargs chmod 644
+  find -name *.so | xargs chmod 755
+  chmod +x ts3client*
+  chmod +x package_inst
+}
+
+build() {
+  install -d "${PKG}"/{usr/bin/,opt/teamspeak3}
+
+  cp -r archive/* ${PKG}/opt/teamspeak3/
+
+  install -D -m644 "${SRC}"/teamspeak3.desktop "${PKG}"/usr/share/applications/teamspeak3.desktop
+  install -D -m644 "${SRC}"/teamspeak3.png "${PKG}"/usr/share/pixmaps/teamspeak3.png
+  install -D -m644 "${SRC}"/LICENSE "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+  ln -s /opt/teamspeak3/ts3client_runscript.sh "${PKG}"/usr/bin/teamspeak3
+
+  # Fix a weird change that TS3 did which broke symlinks.
+  # Check: https://forum.teamspeak.com/threads/134617-Linux-client-not-starting-when-run-though-symlink-since-3-1-8?p=454315#post454315
+  sed -i "s|cd.*|cd /opt/teamspeak3|" "${PKG}"/opt/teamspeak3/ts3client_runscript.sh
+
+  # Fix teamspeak3 on wayland (FS#57366)
+  sed -i "s|ts3client_linux_amd64|ts3client_linux_amd64 -platform xcb|" "${PKG}"/opt/teamspeak3/ts3client_runscript.sh
+}
