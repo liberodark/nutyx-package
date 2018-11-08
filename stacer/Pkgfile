@@ -1,4 +1,4 @@
-# Depends on: qt5-charts qt5-svg hicolor-icon-theme
+# Depends on: qtcharts qtsvg hicolor-icon-theme
 
 description="Linux System Optimizer and Monitoring"
 packager="liberodark"
