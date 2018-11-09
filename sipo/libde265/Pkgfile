@@ -1,0 +1,32 @@
+packager="Greg"
+
+
+#Depends on: ffmpeg sdl qtbase
+
+
+description="Open h.265 video codec implementation"
+url="https://github.com/strukturag/libde265"
+
+run=()
+
+name=libde265
+version=1.0.3
+release=1
+
+source=(https://github.com/strukturag/$name/releases/download/v$version/$name-$version.tar.gz libde265-ffmpeg4.patch)
+
+prepare(){
+  cd $name-$version
+  patch -p1 -i ../libde265-ffmpeg4.patch # Fix build with ffmpeg 4.0
+}
+
+build() {
+  cd $name-$version
+  ./configure --prefix=/usr --enable-static=no
+  make
+}
+
+package() {
+  cd $name-$version
+  make DESTDIR="$PKG" install
+}

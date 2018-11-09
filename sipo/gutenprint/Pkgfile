@@ -1,0 +1,54 @@
+packager="Greg"
+
+# Depends on: ijs gimp gtk2 cups foomatic-db-engine ghostscript 
+
+description="Top quality printer drivers for POSIX systems"
+url="http://gimp-print.sourceforge.net"
+
+name=gutenprint
+version=5.2.14
+release=1
+
+source=(http://downloads.sourceforge.net/gimp-print/$name-$version.tar.bz2)
+
+prepare(){
+cd $name-$version
+  # sbindir is not properly taken over there
+  sed -i "s:cups_sbindir=\"\/usr\/sbin\":cups_sbindir=\"\/usr\/bin\":g" m4/stp_cups.m4
+  sed -i  "s:cups_sbindir=\"\${cups_prefix}\/sbin\":cups_sbindir=\"\${cups_prefix}\/bin\":" m4/stp_cups.m4
+  sed -i "s:m4local:m4extra:" Makefile.am
+  autoreconf -vfi
+}
+
+build() {
+cd $name-$version
+
+  ./configure --prefix=/usr \
+    --sbindir=/usr/bin \
+    --disable-rpath \
+    --enable-samples \
+	--disable-static \
+	--disable-static-genppd \
+	--enable-cups-ppds \
+	--enable-simplified-cups-ppds=only \
+	--enable-translated-cups-ppds 
+	
+
+  make
+}
+
+package() {
+
+  cd ${name}-${version}
+  make DESTDIR=${PKG} install
+ 
+  mkdir $SRC/tmp_foomatic-db-gutenprint-ppds
+  
+  mv ${PKG}/usr/share/cups/model $SRC/tmp_foomatic-db-gutenprint-ppds/
+
+  rm -rf ${PKG}/usr/share/foomatic 
+  rm -rf ${PKG}/etc
+
+  mkdir -p ${PKG}/usr/share/cups
+  mv $SRC/tmp_foomatic-db-gutenprint-ppds/* ${PKG}//usr/share/cups/
+}

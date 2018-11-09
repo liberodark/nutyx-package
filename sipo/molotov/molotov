@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[ -z "$XDG_DATA_DIRS" ] && export XDG_DATA_DIRS=$HOME/.local/share:/usr/share
+export SKIP=yes
+exec /opt/appimages/molotov.AppImage

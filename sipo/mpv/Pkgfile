@@ -1,0 +1,49 @@
+packager="Greg"
+
+
+# Depends on : desktop-file-utils ffmpeg hicolor-icon-theme jack lcms2 libarchive libcaca libcdio-paranoia libdvdnav libglade libva xorg-libxinerama libxkbcommon xorg-libxrandr xorg-libxscrnsaver xorg-libxv lua rubberband samba uchardet wayland xdg-utils mesa python2-docutils ladspa wayland-protocols youtube-dl
+
+
+description="a free, open source, and cross-platform media player"
+url="https://mpv.io/"
+
+run=()
+
+name=mpv
+version=0.29.0
+_waf_version=2.0.9
+release=2
+
+source=(https://github.com/mpv-player/mpv/archive/v0.29.0.tar.gz https://waf.io/waf-2.0.9)
+
+prepare(){
+  cd ${name}-${version}
+
+  install -m755 "${SRC}"/waf-${_waf_version} waf
+}
+
+build() {
+  cd ${name}-${version}
+
+  ./waf configure --prefix=/usr \
+    --confdir=/etc/mpv \
+    --enable-cdda \
+    --enable-dvb \
+    --enable-dvdnav \
+    --enable-libarchive \
+    --enable-libmpv-shared \
+    --enable-libsmbclient \
+    --enable-tv \
+    --enable-zsh-comp
+
+  ./waf build
+}
+
+package() {
+  cd ${name}-${version}
+
+  ./waf install --destdir="$PKG"
+
+  install -m644 DOCS/{encoding.rst,tech-overview.txt} \
+    "$PKG"/usr/share/doc/mpv
+}

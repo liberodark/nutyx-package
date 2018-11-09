@@ -1,0 +1,37 @@
+packager="Greg"
+
+# Depends on : hicolor-icon-theme libconfig dbus libglade xorg-libxcomposite xorg-libxinerama xorg-libxrandr asciidoc cmake git mesa setconf
+
+description="X compositor that may fix tearing issues"
+url="https://github.com/chjj/compton"
+
+run=()
+
+name=compton
+version=2.0
+release=1
+
+source=(compton.conf)
+
+prepare(){
+  git clone https://github.com/yshui/compton
+  cd $name
+
+  setconf $name.desktop Exec 'compton --xrender-sync-fence'
+  setconf $name.desktop TryExec 'compton --xrender-sync-fence'
+  setconf $name.desktop Comment 'Compositor for X11'
+}
+
+build() {
+  COMPTON_VERSION="v$version" PREFIX=/usr make -C "$name" compton docs
+}
+
+package() {
+  PREFIX="$PKG/usr" make -C "$name" install
+
+  install -Dm644 $name/compton.sample.conf "$PKG/etc/xdg/compton.conf.example"
+  install -Dm644 compton.conf "$PKG/etc/xdg/compton.conf"
+  install -Dm644 $name/LICENSE "$PKG/usr/share/licenses/$name/LICENSE"
+}
+
+

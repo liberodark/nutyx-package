@@ -1,0 +1,37 @@
+# Depends on : qtbase qtx11extras ffmpeg alsa-lib pulseaudio jack libglade xorg-glu xorg-libx11 xorg-libxext xorg-libxfixes xorg-libxi desktop-file-utils gtk-update-icon-cache git cmake qttools
+
+
+description="A feature-rich screen recorder that supports X11 and OpenGL."
+url="http://www.maartenbaert.be/simplescreenrecorder/"
+
+
+run=()
+
+name=simplescreenrecorder
+version=0.3.11
+release=1
+
+source=()
+
+prepare(){
+  git clone https://github.com/MaartenBaert/ssr.git
+  cd ssr
+  mkdir -p build
+}
+
+build() {
+  cd ssr/build
+  # fPIC is only required for qt5 + gcc5
+  #CXXFLAGS="$CXXFLAGS -fPIC"
+  #./configure --prefix=/usr --disable-assert --with-qt5
+  #./configure --prefix=/usr --disable-assert
+  #  -DLRELEASE='/usr/bin/lrelease-qt4' \
+  cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_QT5=on \
+    -DCMAKE_INSTALL_LIBDIR='lib' ../
+  make
+}
+package() {
+  cd ssr/build
+  make DESTDIR="$PKG" install
+}

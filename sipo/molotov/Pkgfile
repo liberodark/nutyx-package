@@ -1,0 +1,33 @@
+packager="Greg"
+
+# Depends on : fuse gconf desktop-file-utils xdg-utils
+
+PKGMK_IGNORE_UNPACK="yes"
+
+description="Molotov gives a streaming access to french TV channels."
+url="http://www.molotov.tv/"
+
+run=()
+
+name=molotov
+version=2.3.0
+
+release=1
+
+source=(http://desktop-auto-upgrade.$name.tv/linux/$version/$name.AppImage molotov molotov.desktop molotov-256.png)
+
+
+build(){
+
+    cd $SRC
+
+    install -D -m644 molotov.desktop $PKG/usr/share/applications/molotov.desktop
+    install -D -m755 molotov $PKG/usr/bin/molotov
+    mkdir -p $PKG/opt/appimages
+    install -D -m755 $name.AppImage $PKG/opt/appimages/$name.AppImage
+	chmod +x $PKG/opt/appimages/$name.AppImage
+
+    install -Dm644 "$SRC/molotov-256.png" "$PKG/usr/share/pixmaps/molotov.png"
+	install -Dm644 "$SRC/$name.desktop" "$PKG/usr/share/applications/molotov.desktop"
+
+}

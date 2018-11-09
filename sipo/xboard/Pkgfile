@@ -1,0 +1,35 @@
+packager="Greg"
+
+
+#Depends on: texinfo xdg-utils gtk2 cairo librsvg gnuchess
+
+
+description="Graphical user interfaces for chess"
+url="http://www.gnu.org/software/xboard/"
+
+run=()
+
+name=xboard
+version=4.9.1
+release=1
+
+source=(https://ftp.gnu.org/gnu/xboard/$name-$version.tar.gz)
+
+build(){
+  cd "${name}-${version}"
+  sed -i 's/fairymax/gnuchess/g' {xaw,gtk}/xboard.h xboard.conf
+  ./configure \
+    --prefix=/usr \
+    --mandir=/usr/share/man \
+    --sysconfdir=/etc \
+    --with-gtk \
+    --enable-zippy
+  make
+}
+
+package() {
+  cd "${SRC}/${name}-${version}"
+  make DESTDIR="${PKG}" install
+  install -Dm755 "$SRC"/${name}-${version}/cmail \
+    "$PKG"/usr/bin/cmail
+}

@@ -1,0 +1,44 @@
+packager="Greg"
+
+
+# Depends on :  llvm cmake libxslt qtxmlpatterns python
+
+
+description="Generates bindings for C++ libraries using CPython source code"
+url="http://qt-project.org/"
+
+run=()
+
+name=shiboken2
+version=5.11.2
+_qtver=5.11.2
+_clangver=6.0.1
+_pkgfqn=pyside-setup-everywhere-src-${_qtver}
+release=1
+
+source=(http://download.qt.io/official_releases/QtForPython/pyside2/PySide2-$version-src/pyside-setup-everywhere-src-$version.tar.xz)
+
+prepare(){
+  mkdir -p build
+}
+
+build() {
+  cd build
+  cmake ../${_pkgfqn}/sources/shiboken2 \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTS=OFF \
+    -DUSE_PYTHON_VERSION=3
+  make
+}
+
+package() {
+  cd $SRC/build
+  make DESTDIR="$PKG" install
+# Provided in python-shiboken2
+  rm -r "$PKG"/usr/lib/{python*,libshiboken*}
+
+  cd $SRC/build
+  make DESTDIR="$PKG" install
+# Provided in shiboken2
+  rm -r "$PKG"/usr/{bin,include,lib/{cmake,pkgconfig},share}
+}

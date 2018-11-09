@@ -1,0 +1,29 @@
+packager="Greg"
+
+
+#Depends on: glib 
+
+
+description="Template engine library written in C"
+url="https://ctpl.tuxfamily.org/"
+
+run=()
+
+name=ctpl
+version=0.3.4
+release=1
+
+source=(https://download.tuxfamily.org/$name/releases/$name-$version.tar.gz)
+
+build(){
+  cd "$name-$version"
+
+  ./configure --prefix=/usr
+  make 
+}
+
+package() {
+  make -C "$name-$version" DESTDIR="$PKG" install
+}
+
+# vim:set ts=2 sw=2 et:

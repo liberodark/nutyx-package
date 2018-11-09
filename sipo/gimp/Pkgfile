@@ -1,0 +1,53 @@
+packager="Greg"
+
+
+#Depends on: babl dbus-glib desktop-file-utils gegl glib-networking hicolor-icon-theme jasper lcms2 libheif libexif libgudev libmng libmypaint librsvg libwebp libwmf xorg-libxmu xorg-libxpm libgexiv2 mypaint-brushes openexr poppler python2-gtk alsa-lib curl ghostscript gtk-doc intltool iso-codes poppler-glib
+
+
+description="GNU Image Manipulation Program"
+url="https://www.gimp.org/"
+
+run=()
+
+name=gimp
+version=2.10.6
+release=1
+
+source=(https://download.gimp.org/pub/gimp/v2.10/gimp-2.10.6.tar.bz2)
+
+prepare(){
+  cd ${name}-${version}
+  _mypaintver=$(echo /usr/lib/libmypaint-*.so | grep -o -E '\-[0-9]+(\.[0-9]+)*' | head -1)
+  sed -i "s|\\(libmypaint\\)\\( >= libmypaint_required_version\\)|\\1${_mypaintver}\\2|g" configure.ac
+  autoreconf -vi
+}
+
+build() {
+pkg-config --exists --print-errors "OpenEXR >= 1.6.1"
+  cd ${name}-${version}
+  PYTHON=/usr/bin/python2 ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --libexecdir=/usr/bin \
+    --enable-mp \
+    --enable-gimp-console \
+    --enable-python \
+    --enable-gtk-doc \
+    --with-bug-report-url='https://bugs.archlinux.org/?string=gimp' \
+    --with-openexr \
+    --without-aa
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd ${name}-${version}
+  make DESTDIR="${PKG}" install
+
+  rm "${PKG}/usr/share/man/man1/gimp-console.1"
+  ln -s gimp-console-${version%.*}.1.gz "${PKG}/usr/share/man/man1/gimp-console.1.gz"
+  ln -s gimptool-2.0 "${PKG}/usr/bin/gimptool"
+  ln -sf gimptool-2.0.1.gz "${PKG}/usr/share/man/man1/gimptool.1.gz"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,26 @@
+packager="Greg"
+
+
+#Depends on:  
+
+
+description="Cross-assembler for 6502 microprocessor"
+url="http://www.floodgap.com/retrotech/xa/"
+
+run=()
+
+name=xa
+version=2.3.8
+release=1
+
+source=(http://www.floodgap.com/retrotech/xa/dists/xa-2.3.8.tar.gz)
+
+build(){
+	cd "${SRC}/${name}-${version}"
+	make
+}
+
+package() {
+	cd "${SRC}/${name}-${version}"
+	make DESTDIR="${PKG}/usr" install
+}

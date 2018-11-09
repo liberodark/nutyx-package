@@ -1,0 +1,38 @@
+packager="Greg"
+
+
+#Depends on: qtscript mpv hicolor-icon-theme xorg-libx11 zlib qttools
+
+
+description="Media player all video and audio formats"
+url="https://www.smplayer.info/"
+
+run=()
+
+name=smplayer
+version=18.9.0
+release=1
+
+source=(https://downloads.sourceforge.net/smplayer/smplayer-18.9.0.tar.bz2)
+
+prepare(){
+  cd ${name}-${version}
+  # make build reproducible, we compress ourselves
+  sed '/gzip -9/d' -i Makefile
+}
+
+build() {
+  cd ${name}-${version}
+  export CXXFLAGS="${CXXFLAGS} ${CPPFLAGS}"
+  make PREFIX=/usr \
+    DOC_PATH="\\\"/usr/share/doc/smplayer\\\"" \
+    QMAKE_OPTS=DEFINES+=NO_DEBUG_ON_CONSOLE \
+    CFLAGS_EXTRA="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+}
+
+package() {
+  cd ${name}-${version}
+  make DOC_PATH=/usr/share/doc/smplayer \
+    DESTDIR="${PKG}" PREFIX=/usr -j1 install
+}
+

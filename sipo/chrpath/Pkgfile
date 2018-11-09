@@ -1,0 +1,36 @@
+packager="Greg"
+
+
+# Depends on : glibc 
+
+
+description="Change or delete the rpath or runpath in ELF files"
+url="http://directory.fsf.org/project/chrpath/"
+
+run=()
+
+name=chrpath
+version=0.16
+release=1
+
+source=(http://http.debian.net/debian/pool/main/c/chrpath/chrpath_0.16.orig.tar.gz)
+
+prepare(){
+  cd "${SRC}"/$name-$version
+#  rm -f config.guess
+#  aclocal
+#  libtoolize
+#  automake --add-missing
+#  autoconf
+}
+
+build() {
+  cd "${SRC}"/$name-$version
+  ./configure --prefix=/usr --mandir=/usr/share/man
+  make
+}
+
+package() {
+  cd "${SRC}"/$name-$version
+  make DESTDIR="${PKG}" docdir=/usr/share/doc/chrpath install
+}

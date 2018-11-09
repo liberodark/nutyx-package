@@ -1,0 +1,20 @@
+packager="Greg"
+
+# Depends on :  
+
+description="A wrapper around the standard ping tool."
+url="https://github.com/denilsonsa/prettyping"
+
+run=()
+
+name=prettyping
+version=1.0.1
+release=1
+
+source=(https://github.com/denilsonsa/prettyping/archive/v$version.tar.gz)
+
+build(){
+
+	install -Dm644 "$SRC/prettyping-$version/LICENSE" "$PKG/usr/share/licenses/$name/LICENSE"
+	install -Dm755 "$SRC/prettyping-$version/prettyping" "$PKG/usr/bin/prettyping"
+}

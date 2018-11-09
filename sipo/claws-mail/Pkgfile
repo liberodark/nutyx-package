@@ -1,0 +1,56 @@
+packager="Greg"
+
+
+#Depends on: bogofilter enchant aspell libetpan gnupg gpgme gnutls dbus gtk2 libtasn1 enchant xorg-libsm hicolor-icon-theme desktop-file-utils xorgproto
+
+
+description="A GTK+ based e-mail client."
+url="http://www.claws-mail.org"
+
+run=()
+
+name=claws-mail
+version=3.17.1
+release=1
+
+source=(http://www.claws-mail.org/download.php?file=releases/claws-mail-3.17.1.tar.xz)
+
+prepare(){
+  cd ${name}-${version}
+  # fix new versioned enchant pkgconfig detection
+  sed -i "s:PKG_CHECK_MODULES(ENCHANT, enchant >= 1.4.0:PKG_CHECK_MODULES(ENCHANT, enchant-2 >= 1.4.0:" configure.ac
+  sed -i "s:--cflags enchant:--cflags enchant-2:" configure.ac
+
+  autoreconf -vfi
+  sed -i 's@^#!.*python.*@#!/usr/bin/python2@' tools/*.py
+  sed -i 's:python -c:python2 -c:g' configure
+}
+
+build() {
+  cd ${name}-${version}
+
+  # fixes for python2
+  export PYTHON="/usr/bin/python2"
+
+./configure --prefix=/usr --mandir=/usr/share/man \
+--disable-compface --disable-ldap \
+--disable-jpilot --enable-enchant --disable-dillo-viewer-plugin \
+--disable-networkmanager-support --disable-demo-plugin \
+--disable-openssl --enable-gnutls --enable-libetpan \
+--disable-spamassassin-plugin --enable-bogofilter-plugin \
+--enable-dillo-plugin
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd ${name}-${version}
+  make DESTDIR=${PKG} install
+
+  # install extra tools
+  cd tools
+  install -m755 -d ${PKG}/usr/lib/claws-mail/tools
+  for files in *.pl *.py *.sh kdeservicemenu multiwebsearch.conf tb2claws-mail update-po uudec uuooffice README; do
+    cp -arv $files ${PKG}/usr/lib/claws-mail/tools/${i}
+  done
+}

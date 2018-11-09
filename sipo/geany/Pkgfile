@@ -1,0 +1,34 @@
+packager="Greg"
+
+
+#Depends on: desktop-file-utils hicolor-icon-theme gtk3 intltool lua perl-xml-parser vte python2
+
+description="Fast and lightweight IDE"
+url="https://www.geany.org/"
+
+run=()
+
+name=geany
+version=1.33.0
+_version=1.33
+release=1
+
+source=(https://download.geany.org/$name-${_version}.tar.bz2)
+
+build(){
+  cd "$name-${version/.0}"
+
+  ./configure \
+    --prefix=/usr \
+    --enable-gtk3 
+
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  make -C "$name-${version/.0}" DESTDIR="$PKG" install
+}
+
+# getver: geany.org
+# vim: ts=2 sw=2 et:

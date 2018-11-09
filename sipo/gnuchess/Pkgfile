@@ -1,0 +1,30 @@
+packager="Greg"
+
+
+#Depends on: bash 
+
+
+description="Play chess against the computer on a terminal and an engine for graphical chess frontends"
+url="http://www.gnu.org/software/chess/chess.html"
+
+run=()
+
+name=gnuchess
+version=6.2.5
+release=1
+
+source=(https://ftp.gnu.org/pub/gnu/chess/$name-$version.tar.gz)
+
+build(){
+  cd $name-$version
+
+  ./configure --prefix=/usr
+
+  make  
+}
+
+package() {
+  cd $name-$version
+
+  make prefix="$PKG"/usr install
+}

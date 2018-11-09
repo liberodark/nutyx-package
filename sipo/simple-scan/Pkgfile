@@ -1,0 +1,31 @@
+packager="Greg"
+
+# Depends on: sane dconf gtk3 colord libgusb ninja meson yelp-tools
+
+description="Simple scanning utility"
+url="https://launchpad.net/simple-scan"
+
+name=simple-scan
+version=3.30.0
+
+source=(https://download.gnome.org/sources/$name/${version:0:4}/$name-$version.tar.xz)
+
+build() {
+
+cd $name-$version
+
+mkdir build
+cd    build
+
+meson --prefix=/usr
+
+ninja 
+
+}
+
+package() {
+
+cd $name-$version/build
+DESTDIR=$PKG ninja install
+
+}

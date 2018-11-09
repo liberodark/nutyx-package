@@ -1,0 +1,49 @@
+packager="Greg"
+
+
+#Depends on: qtbase python-pygments docbook-xsl qttools python
+
+
+description="A tool for static C/C++ code analysis"
+url="http://cppcheck.sourceforge.net/"
+
+run=()
+
+name=cppcheck
+version=1.84
+release=1
+
+source=(https://github.com/danmar/$name/archive/$version.tar.gz)
+
+build(){
+   cd "${name}-${version}"
+   export CXXFLAGS+=" -DNDEBUG"
+   # Unicode fix
+   LANG='en_US.UTF-8' make SRCDIR=build CFGDIR=/usr/share/cppcheck/cfg HAVE_RULES=yes
+
+   make DB2MAN=/usr/share/xml/docbook/xsl-stylesheets-1.79.2/manpages/docbook.xsl CFGDIR=/usr/share/cppcheck/cfg man
+
+   cd gui
+   lrelease gui.pro
+   qmake HAVE_RULES=yes
+   make SRCDIR=build CFGDIR=/usr/share/cppcheck/cfg HAVE_RULES=yes
+}
+
+
+package() {
+   cd "${name}-${version}"
+   LANG='en_US.UTF-8' make DESTDIR=${PKG} CFGDIR=/usr/share/cppcheck/cfg SRCDIR=build HAVE_RULES=yes install 
+
+   install -D -p -m 644 cppcheck.1 "${PKG}"/usr/share/man/man1/cppcheck.1
+
+   # GUI
+   install -m755 gui/cppcheck-gui "${PKG}"/usr/bin
+   install -d "${PKG}/usr/share/applications/"
+   install -m644 gui/cppcheck-gui.desktop "${PKG}/usr/share/applications/"
+
+   install -d "${PKG}"/usr/share/cppcheck/cfg
+   install -D ./cfg/* -t "${PKG}"/usr/share/cppcheck/cfg
+
+   install -d "${PKG}"/usr/share/cppcheck/cfg/lang
+   install -D gui/*.qm -t "${PKG}"/usr/share/cppcheck/cfg/lang/
+}

@@ -1,0 +1,31 @@
+packager="Greg"
+
+
+# Depends on : python python-setuptools ffmpeg rtmpdump
+
+
+description="A small command-line program to download videos from YouTube.com and a few more sites"
+url="http://rg3.github.io/youtube-dl/"
+
+run=()
+
+name=youtube-dl
+version=2018.09.18
+release=1
+
+source=(http://youtube-dl.org/downloads/$version/$name-$version.tar.gz)
+
+prepare(){
+  cd ${name}
+  sed -i 's|etc/bash_completion.d|share/bash-completion/completions|' setup.py
+  sed -i 's|etc/fish/completions|share/fish/completions|' setup.py
+}
+
+build() {
+  cd ${name}
+  python setup.py install --root="${PKG}/" --optimize=1
+  mv "${PKG}/usr/share/bash-completion/completions/youtube-dl.bash-completion" \
+     "${PKG}/usr/share/bash-completion/completions/youtube-dl"
+  install -Dm644 youtube-dl.zsh "${PKG}/usr/share/zsh/site-functions/_youtube-dl"
+  install -Dm644 LICENSE "${PKG}/usr/share/licenses/${name}/LICENSE"
+}

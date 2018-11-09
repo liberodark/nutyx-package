@@ -1,0 +1,38 @@
+packager="Greg"
+
+
+#Depends on: ctpl geany gpgme gtkspell3 libgit2 cppcheck intltool
+
+
+description="Plugins for Geany"
+url="https://plugins.geany.org/"
+
+run=()
+
+name=geany-plugins
+version=1.33
+release=1
+
+source=(https://plugins.geany.org/geany-plugins/geany-plugins-1.33.tar.bz2
+3d02ec2a2b0d3ccfeb28503534b95e60861e6fe8.patch)
+
+prepare(){
+  cd $name-$version
+
+  patch -p1 < ../3d02ec2a2b0d3ccfeb28503534b95e60861e6fe8.patch
+
+  autoreconf -fi
+}
+
+build() {
+  cd "$name-$version"
+
+  ./configure --prefix=/usr --libexecdir=/usr/lib
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  make -C "$name-$version" DESTDIR="$PKG" install
+}
+

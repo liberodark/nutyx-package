@@ -1,0 +1,40 @@
+# Depends on : libvorbis libmad libid3tag wxgtk lame hicolor-icon-theme ffmpeg shared-mime-info desktop-file-utils redland jack soundtouch cmake zip python2 
+
+
+
+description="A program that lets you manipulate digital audio waveforms"
+url="https://audacityteam.org"
+packager="sipo<sipo@linuxnutyx.fr>"
+contributors="Sipo"
+
+run=()
+
+name=audacity
+version=2.2.2
+release=1
+
+source=(https://github.com/audacity/audacity/archive/Audacity-2.2.2.tar.gz)
+
+prepare(){
+  mv -v "${name}-Audacity-${version}" "${name}-${version}"
+  cd "${name}-${version}"
+  autoreconf -vi
+}
+
+build() {
+  cd "${name}-${version}"
+  WX_CONFIG=wx-config-gtk3 ./configure --prefix="/usr" \
+    --with-libsndfile="system" \
+    --with-ffmpeg="system" \
+    --with-expat="system" \
+    --with-lame="system" \
+    --with-libsamplerate 
+
+
+  make
+}
+
+package() {
+  cd "${name}-${version}"
+  make DESTDIR="${PKG}" install
+}

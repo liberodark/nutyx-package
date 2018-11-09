@@ -1,0 +1,30 @@
+# Depends on : glibc glib libgnomecanvas libpcap popt libglade rarian gnome-doc-utils yelp-tools goocanvas
+
+
+description="Graphical network monitor for various OSI layers and protocols"
+url="http://etherape.sourceforge.net/"
+
+run=()
+
+name=etherape
+version=0.9.18
+release=1
+
+source=(https://downloads.sourceforge.net/etherape/etherape-$version.tar.gz)
+
+prepare(){
+  cd ${name}-${version}
+  autoreconf -fiv
+}
+
+build() {
+  cd ${name}-${version}
+  ./configure --prefix=/usr --sysconfdir=/etc
+  make
+}
+
+package() {
+  cd ${name}-${version}
+  make DESTDIR="${PKG}" install
+}
+

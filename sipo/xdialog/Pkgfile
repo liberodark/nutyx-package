@@ -1,0 +1,32 @@
+packager="Greg"
+
+
+#Depends on: gtk2 
+
+
+description="A drop-in replacement for the 'dialog' or 'cdialog' programs"
+url="http://xdialog.dyns.net/"
+
+run=()
+
+name=xdialog
+version=2.3.1
+release=1
+
+source=(http://xdialog.free.fr/Xdialog-$version.tar.bz2 xdialog-2.3.1-gtk2.patch)
+
+build(){
+  cd "$SRC"/Xdialog-$version
+  patch -p1 <../xdialog-$version-gtk2.patch
+  ./configure --prefix=/usr \
+    --mandir="$PKG"/usr/share/man --with-gtk2
+  # Fix bugs in automake - see Xdialog.spec
+  sed -i -e "s:RANLIB = @RANLIB@:RANLIB = /usr/bin/ranlib:" lib/Makefile
+  sed -i -e "s;XGETTEXT = :;XGETTEXT = /usr/bin/xgettext;" po/Makefile
+  make
+}
+
+package() {
+  cd "$SRC"/Xdialog-${version}
+  make prefix="$PKG"/usr install
+}

@@ -1,0 +1,25 @@
+packager="greg"
+
+# Depends on:
+
+description="A cat clone with the wings"
+url="https://github.com/sharkdp/bat"
+
+name=bat
+version=0.7.0
+release=1
+
+PKGMK_KEEP_SOURCES='NO'
+
+source=(https://github.com/sharkdp/bat/releases/download/v0.7.0/bat_0.7.0_amd64.deb)
+
+build() {
+
+   cd $SRC
+   ar x bat_0.7.0_amd64.deb
+   tar xf data.tar.xz
+   mkdir $PKG/usr
+   cp -av usr/ $PKG/
+
+
+}

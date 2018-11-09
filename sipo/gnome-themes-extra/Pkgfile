@@ -1,0 +1,17 @@
+packager="Greg"
+
+
+#Depends on:  gtk2 gtk3 intltool librsvg
+
+
+description="Extra Themes for GNOME Applications"
+url="https://gitlab.gnome.org/GNOME/gnome-themes-extra"
+
+run=()
+
+
+name=gnome-themes-extra
+version=3.28
+release=1
+
+source=(http://ftp.gnome.org/pub/gnome/sources/$name/${version}/$name-$version.tar.xz)

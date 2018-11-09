@@ -1,0 +1,29 @@
+packager="Greg"
+
+# Depends on : sdl2 openal mesa freetype gtk-update-icon-cache glew desktop-file-utils shared-mime-info libmpeg2 zip
+
+
+description="Focuses on emulating Amiga games using the accurate emulation code from WinUAE"
+url="http://fs-uae.net"
+
+run=()
+
+name=fs-uae
+version=2.8.3
+release=1
+
+source=(http://fs-uae.net/stable/2.8.3/$name-$version.tar.gz)
+
+build() {
+  cd $name-$version
+
+  ./configure --prefix=/usr
+
+  make 
+}
+
+package(){
+  cd $name-$version
+
+  make DESTDIR="$PKG" install
+}

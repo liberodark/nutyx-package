@@ -1,0 +1,38 @@
+packager="Greg"
+
+
+#Depends on: gtk3 enchant intltool gobject-introspection vala python2
+
+
+description="Provides word-processor-style highlighting and replacement of misspelled words in a GtkTextView widget"
+url="http://gtkspell.sourceforge.net/"
+
+run=()
+
+name=gtkspell3
+version=3.0.9
+release=1
+
+source=(https://downloads.sourceforge.net/gtkspell/$name-$version.tar.xz enchant-2.patch)
+
+prepare(){
+  cd $name-$version
+  patch -Np1 -i ../enchant-2.patch
+  sed -e 's/enchant/enchant-2/g' -i configure.ac
+  autoreconf -vi
+}
+
+build() {
+  cd $name-$version
+  ./configure --prefix=/usr
+
+  #https://bugzilla.gnome.org/show_bug.cgi?id=656231
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+
+  make
+}
+
+package() {
+  cd $name-$version
+  make DESTDIR="$PKG" install
+}
