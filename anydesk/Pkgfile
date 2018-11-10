@@ -5,7 +5,7 @@ packager="liberodark"
 url="https://anydesk.fr/"
 
 name=anydesk
-version=4.0.0
+version=4.0.1
 
 source=(https://download.anydesk.com/linux/anydesk_${version}-1_amd64.deb)
 
