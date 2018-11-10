@@ -1,0 +1,69 @@
+
+name=jdownloader2
+version=latest
+pkgrel=13
+pkgdesc='Download manager, written in Java, for one-click hosting sites like Rapidshare and Megaupload. Uses its own updater.'
+arch=('any')
+conflicts=('jdownloader')
+replaces=('jdownloader')
+url='http://jdownloader.org/'
+license=('GPL')
+depends=('java-runtime' 'wget' 'bash' 'hicolor-icon-theme' 'unzip' 'shared-mime-info' 'desktop-file-utils' 'fontconfig' 'ttf-dejavu')
+optdepends=('phantomjs: needed for some remote capture solving')
+install='jdownloader.install'
+source=('JDownloader'
+        'JDownloaderHeadless'
+        'JDownloaderHeadlessCtl'
+        'functions.sh'
+        'JDownloaderHeadlessCleanLogin'
+        'jdownloader.xml'
+        'jdownloader.desktop'
+        'jd-containers.desktop'
+        'jd-container16.png'
+        'jd-container22.png'
+        'jd-container24.png'
+        'jd-container32.png'
+        'jd-container48.png'
+        'jd-container256.png'
+        'jdownloader16.png'
+        'jdownloader22.png'
+        'jdownloader24.png'
+        'jdownloader32.png'
+        'jdownloader48.png'
+        'jdownloader256.png'
+        'jdownloader.service' )
+
+package() {
+  install -d -m755 "$pkgdir/opt/JDownloaderScripts"
+  install -D -m755 "$srcdir/JDownloader" "$pkgdir/opt/JDownloaderScripts/JDownloader"
+	install -D -m755 "$srcdir/JDownloaderHeadless" "$pkgdir/opt/JDownloaderScripts/JDownloaderHeadless"
+  install -D -m755 "$srcdir/JDownloaderHeadlessCtl" "$pkgdir/opt/JDownloaderScripts/JDownloaderHeadlessCtl"
+  install -D -m755 "$srcdir/functions.sh" "$pkgdir/opt/JDownloaderScripts/functions.sh"
+	install -D -m755 "$srcdir/JDownloaderHeadlessCleanLogin" "$pkgdir/opt/JDownloaderScripts/JDownloaderHeadlessCleanLogin"
+	
+  
+  install -D -m644 "$srcdir/jdownloader.xml" "$pkgdir/usr/share/mime/packages/jdownloader.xml"
+	install -D -m644 "$srcdir/jdownloader.desktop" "$pkgdir/usr/share/applications/jdownloader.desktop"
+	install -D -m644 "$srcdir/jd-containers.desktop" "$pkgdir/usr/share/applications/jd-containers.desktop"
+	install -D -m644 "$srcdir/jd-container16.png" "$pkgdir/usr/share/icons/hicolor/16x16/mimetypes/jd-container.png"
+	install -D -m644 "$srcdir/jd-container22.png" "$pkgdir/usr/share/icons/hicolor/22x22/mimetypes/jd-container.png"
+	install -D -m644 "$srcdir/jd-container24.png" "$pkgdir/usr/share/icons/hicolor/24x24/mimetypes/jd-container.png"
+	install -D -m644 "$srcdir/jd-container32.png" "$pkgdir/usr/share/icons/hicolor/32x32/mimetypes/jd-container.png"
+	install -D -m644 "$srcdir/jd-container48.png" "$pkgdir/usr/share/icons/hicolor/48x48/mimetypes/jd-container.png"
+	install -D -m644 "$srcdir/jd-container256.png" "$pkgdir/usr/share/icons/hicolor/256x256/mimetypes/jd-container.png"
+	install -D -m644 "$srcdir/jdownloader16.png" "$pkgdir/usr/share/icons/hicolor/16x16/apps/jdownloader.png"
+	install -D -m644 "$srcdir/jdownloader22.png" "$pkgdir/usr/share/icons/hicolor/22x22/apps/jdownloader.png"
+	install -D -m644 "$srcdir/jdownloader24.png" "$pkgdir/usr/share/icons/hicolor/24x24/apps/jdownloader.png"
+	install -D -m644 "$srcdir/jdownloader32.png" "$pkgdir/usr/share/icons/hicolor/32x32/apps/jdownloader.png"
+	install -D -m644 "$srcdir/jdownloader48.png" "$pkgdir/usr/share/icons/hicolor/48x48/apps/jdownloader.png"
+	install -D -m644 "$srcdir/jdownloader256.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/jdownloader.png"
+	install -D -m644 "$srcdir/jdownloader.service" "$pkgdir/usr/lib/systemd/system/jdownloader.service"
+	install -d -m775 "$pkgdir/opt/JDownloader"
+  mkdir -p "$pkgdir/usr/bin"
+  
+  ln -s "/opt/JDownloaderScripts/JDownloader"  "${pkgdir}/usr/bin/JDownloader"
+	ln -s "/opt/JDownloaderScripts/JDownloader" "${pkgdir}/usr/bin/jdownloader"
+  ln -s "/opt/JDownloaderScripts/JDownloaderHeadless" "${pkgdir}/usr/bin/JDownloaderHeadless" 
+  ln -s "/opt/JDownloaderScripts/JDownloaderHeadlessCtl" "${pkgdir}/usr/bin/JDownloaderHeadlessCtl"
+  ln -s "/opt/JDownloaderScripts/JDownloaderHeadlessCleanLogin" "${pkgdir}/usr/bin/JDownloaderHeadlessCleanLogin" 
+}
