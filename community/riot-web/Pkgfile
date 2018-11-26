@@ -1,4 +1,4 @@
-# Depends on: gconf2, gconf-service, libnotify4, libappindicator1, libxtst6, libnss3, libxss1
+# Depends on: gconf, libnotify, xorg-libxtst, nss, libxscrnsav
 
 description="A feature-rich client for Matrix.org"
 packager="liberodark"
