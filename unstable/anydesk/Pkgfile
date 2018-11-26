@@ -1,4 +1,4 @@
- # Depends on: cairo, gdk-pixbuf, glib, gtk2, gtkglext, xorg-libx11, libxcb, xorg-libxdamage, xorg-libxext, xorg-libxfixes, xorg-libxi, xorg-libxrandr, xorg-libxtst, pango, python-shiboken2, pulseaudio
+ # Depends on: cairo, gdk-pixbuf, glib, gtk2, gtkglext, xorg-libx11, libxcb, xorg-libxdamage, xorg-libxext, xorg-libxfixes, xorg-libxi, xorg-libxrandr, xorg-libxtst, pango, shiboken2, pulseaudio
 
 description="All-In-One Software for Remote Support"
 packager="liberodark"
