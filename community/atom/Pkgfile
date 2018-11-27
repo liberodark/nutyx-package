@@ -1,4 +1,4 @@
- # Depends on: xorg-libxkbfile
+ # Depends on: xorg-libxkbfile, git
  
 description="A hackable text editor for the 21st Century"
 packager="liberodark"
