@@ -1,0 +1,17 @@
+# Depends on: electron, libsecret, xorg-libxkbfile, git, gulp, npm, python2, yarn
+
+description="The Open Source build of Visual Studio Code (vscode) editor"
+packager="liberodark"
+url="https://code.visualstudio.com/"
+
+name=code
+version=1.29.1
+
+source=(https://az764295.vo.msecnd.net/stable/bc24f98b5f70467bc689abf41cc5550ca637088e/code_1.29.1-1542309157_amd64.deb)
+
+build() {
+
+ar x code_1.29.1-1542309157_amd64.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
+}
