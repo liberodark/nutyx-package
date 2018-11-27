@@ -1,0 +1,17 @@
+ # Depends on: xorg-libxkbfile
+ 
+description="A hackable text editor for the 21st Century"
+packager="liberodark"
+url="https://atom.io/"
+
+name=atom
+version=1.32.2
+
+source=(https://github.com/atom/atom/releases/download/v${version}/atom-amd64.deb)
+
+build() {
+
+ar x atom-amd64.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
+}
