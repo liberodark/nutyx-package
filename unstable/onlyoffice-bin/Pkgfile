@@ -1,4 +1,4 @@
- # Depends on: desktop-file-utils, fontconfig, glu, gdk-pixbuf2, hicolor-icon-theme, libpulse, libxrender, openssl-1.0, sdl2, shared-mime-info, xdg-utils, xorg-mkfontdir, cups, curl, libjpeg-turbo, pango, ttf-wps-fonts
+ # Depends on: cairo, gcc-libs, gconf, gdk-pixbuf2, glib2, gtk2, gtk3, gtkglext, libcurl-gnutls, libglvnd, libx11, libxml2, libxss, nss, qt5-declarative, qt5-svg, qt5-x11extras, ttf-dejavu, ttf-liberation, xorg-server
  
 description="An office suite that combines text, spreadsheet and presentation editors"
 packager="liberodark"
