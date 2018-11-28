@@ -1,0 +1,19 @@
+ # Depends on: qtbase, qttools
+
+name=hypercube
+version=1.7.0
+description="Graph visualization tool"
+packager="liberodark"
+url="http://tumic.wz.cz/hypercube/"
+
+
+source=("https://download.opensuse.org/repositories/home:/tumic:/Hypercube/Debian_9.0/amd64/hypercube_${version}_amd64.deb"
+        'hypercube.desktop')
+        
+
+build() {
+
+ar x hypercube_${version}_amd64.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
+}
