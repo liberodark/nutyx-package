@@ -2,16 +2,16 @@
  
 description="An office suite that combines text, spreadsheet and presentation editors"
 packager="liberodark"
-url="http://wps-community.org"
+url="https://www.onlyoffice.com/f"
 
-name=wps-office
-version=10.1.0.675
+name=onlyoffice-desktop
+version=5.1.27 
 
-source=(http://kdl.cc.ksosoft.com/wps-community/download/6757/wps-office_${version}_amd64.deb)
+source=(https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb)
 
 build() {
 
-ar x wps-office_${version}_amd64.deb
+ar x onlyoffice-desktopeditors_amd64.deb
 tar xvf data.tar.xz
 cp -r usr $PKG
 }
