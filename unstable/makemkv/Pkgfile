@@ -7,7 +7,7 @@ url="http://www.makemkv.com"
 name=makemkv
 version=1.14.1
 
-source=(${url}/download/${name}-bin-${version}.tar.gz ${url}/download/${pkgname}-oss-${pkgver}.tar.gz makemkv.1 makemkvcon.1 mmdtsdec.1)
+source=(${url}/download/${name}-bin-${version}.tar.gz ${url}/download/${name}-oss-${version}.tar.gz makemkv.1 makemkvcon.1 mmdtsdec.1)
 
 build() {
 
