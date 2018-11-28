@@ -36,13 +36,13 @@ package() {
 
   gzip hypercube.1
 
-  install -dm755 ${DIR}/usr/share/${name}/{examples,translations}
-  install -Dm755 build/hypercube ${DIR}/usr/bin/${name}
-  install -Dm755 build-cli/hypercube-cli ${DIR}/usr/bin/${name}-cli
-  install -Dm644 hypercube.1.gz ${DIR}/usr/share/man/man1/hypercube.1.gz
-  ln -s /usr/share/man/man1/hypercube.1.gz $DIR/usr/share/man/man1/hypercube-cli.1.gz
-  install -Dm644 examples/* ${DIR}/usr/share/${name}/examples
-  install -Dm644 lang/*.qm ${DIR}/usr/share/${name}/translations
-  install -Dm644 icons/hypercube.png ${DIR}/usr/share/pixmaps/${name}.png
-  install -Dm644 ../hypercube.desktop ${DIR}/usr/share/applications/${name}.desktop
+  install -dm755 ${PKG}/usr/share/${name}/{examples,translations}
+  install -Dm755 build/hypercube ${PKG}/usr/bin/${name}
+  install -Dm755 build-cli/hypercube-cli ${PKG}/usr/bin/${name}-cli
+  install -Dm644 hypercube.1.gz ${PKG}/usr/share/man/man1/hypercube.1.gz
+  ln -s /usr/share/man/man1/hypercube.1.gz $PKG/usr/share/man/man1/hypercube-cli.1.gz
+  install -Dm644 examples/* ${PKG}/usr/share/${name}/examples
+  install -Dm644 lang/*.qm ${PKG}/usr/share/${name}/translations
+  install -Dm644 icons/hypercube.png ${PKG}/usr/share/pixmaps/${name}.png
+  install -Dm644 ../hypercube.desktop ${PKG}/usr/share/applications/${name}.desktop
 }
