@@ -1,0 +1,18 @@
+ # Depends on: 
+ 
+description="Simple, Cross-Platform calculator built with Electron! In less than 100 lines of code."
+packager="liberodark"
+url="https://github.com/elcalc/elcalc/"
+
+name=elcalc
+version=5.0.0
+
+source=(https://github.com/elcalc/elcalc/releases/download/${version}/elcalc_${version}_amd64.deb)
+
+build() {
+
+ar x elcalc_${version}_amd64.deb
+tar xvf data.tar.xz
+cp -r opt $PKG
+cp -r usr $PKG
+}
