@@ -7,42 +7,13 @@ packager="liberodark"
 url="http://tumic.wz.cz/hypercube/"
 
 
-source=("https://github.com/tumic0/${name}/archive/${version}.tar.gz"
+source=("https://download.opensuse.org/repositories/home:/tumic:/Hypercube/Debian_9.0/amd64/hypercube_${version}_amd64.deb"
         'hypercube.desktop')
         
 
 build() {
-  cd ${name}-${version}
 
-  rm -rf build
-  mkdir -p build
-  cd build
-
-  lrelease ../hypercube.pro
-  qmake ../hypercube.pro
-  make
-
-  cd ..
-  rm -rf build-cli
-  mkdir -p build-cli
-  cd build-cli
-
-  qmake ../hypercube-cli.pro
-  make
-}
-
-package() {
-  cd ${name}-${version}
-
-  gzip hypercube.1
-
-  install -dm755 ${PKG}/usr/share/${name}/{examples,translations}
-  install -Dm755 build/hypercube ${PKG}/usr/bin/${name}
-  install -Dm755 build-cli/hypercube-cli ${PKG}/usr/bin/${name}-cli
-  install -Dm644 hypercube.1.gz ${PKG}/usr/share/man/man1/hypercube.1.gz
-  ln -s /usr/share/man/man1/hypercube.1.gz $PKG/usr/share/man/man1/hypercube-cli.1.gz
-  install -Dm644 examples/* ${PKG}/usr/share/${name}/examples
-  install -Dm644 lang/*.qm ${PKG}/usr/share/${name}/translations
-  install -Dm644 icons/hypercube.png ${PKG}/usr/share/pixmaps/${name}.png
-  install -Dm644 ../hypercube.desktop ${PKG}/usr/share/applications/${name}.desktop
+ar x hypercube_${version}_amd64.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
 }
