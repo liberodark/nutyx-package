@@ -1,0 +1,27 @@
+ # Depends on: desktop-file-utils, gtk3, xdg-utils, jack, pulseaudio
+ 
+description="Digital Audio Workstation"
+packager="liberodark"
+url="https://www.reaper.fm/"
+
+name=reaper
+version=5.963
+
+source=(https://www.reaper.fm/files/5.x/reaper5963_linux_x86_64.tar.xz)
+
+
+build () {
+  XDG_DATA_HOME="${SRC}/desktop" sh "${SRC}/reaper_linux_x86_64/install-reaper.sh" --install "${DIR}/opt" --integrate-user-desktop
+
+  sed -i 's#^Exec.*#Exec="/opt/REAPER/reaper" %F#g' "${SRC}/desktop/applications/cockos-reaper.desktop"
+  install -D -m644 "${SRC}/desktop/applications/cockos-reaper.desktop" "${DIR}/usr/share/applications/cockos-reaper.desktop"
+  install -d "${DIR}/usr/share/icons/hicolor/256x256/apps"
+  install -m644 "${SRC}/desktop/icons/hicolor/256x256/apps/"*.png "${DIR}/usr/share/icons/hicolor/256x256/apps"
+  install -D -m644 "${SRC}/desktop/mime/packages/application-x-reaper.xml" "${DIR}/usr/share/mime/packages/application-x-reaper.xml"
+
+  rm "${DIR}/opt/REAPER/uninstall-reaper.sh"
+  mkdir -p "${DIR}/usr/bin"
+  ln -s /opt/REAPER/reaper "${DIR}/usr/bin/reaper"
+  mkdir -p "${DIR}/usr/share/licenses/reaper"
+  ln -s /opt/REAPER/license.txt "${DIR}/usr/share/licenses/reaper/LICENSE"
+}
