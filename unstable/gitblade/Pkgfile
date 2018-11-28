@@ -1,0 +1,17 @@
+ # Depends on: git
+ 
+description="An elegant GUI for Git."
+packager="liberodark"
+url="https://atom.io/"
+
+name=gitblade
+version=0.9.5
+
+source=(https://gitblade.com/ppa/gitblade_${version}_amd64.deb)
+
+build() {
+
+ar x gitblade_${version}_amd64.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
+}
