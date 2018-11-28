@@ -1,0 +1,48 @@
+ # Depends on: qtbase, qttools
+
+name=hypercube
+version=1.7.0
+description="Graph visualization tool"
+packager="liberodark"
+url="http://tumic.wz.cz/hypercube/"
+
+
+source=("https://github.com/tumic0/${name}/archive/${version}.tar.gz"
+        'hypercube.desktop')
+        
+
+build() {
+  cd ${name}-${version}
+
+  rm -rf build
+  mkdir -p build
+  cd build
+
+  lrelease ../hypercube.pro
+  qmake ../hypercube.pro
+  make
+
+  cd ..
+  rm -rf build-cli
+  mkdir -p build-cli
+  cd build-cli
+
+  qmake ../hypercube-cli.pro
+  make
+}
+
+package() {
+  cd ${name}-${version}
+
+  gzip hypercube.1
+
+  install -dm755 ${DIR}/usr/share/${name}/{examples,translations}
+  install -Dm755 build/hypercube ${DIR}/usr/bin/${name}
+  install -Dm755 build-cli/hypercube-cli ${DIR}/usr/bin/${name}-cli
+  install -Dm644 hypercube.1.gz ${DIR}/usr/share/man/man1/hypercube.1.gz
+  ln -s /usr/share/man/man1/hypercube.1.gz $DIR/usr/share/man/man1/hypercube-cli.1.gz
+  install -Dm644 examples/* ${DIR}/usr/share/${name}/examples
+  install -Dm644 lang/*.qm ${DIR}/usr/share/${name}/translations
+  install -Dm644 icons/hypercube.png ${DIR}/usr/share/pixmaps/${name}.png
+  install -Dm644 ../hypercube.desktop ${DIR}/usr/share/applications/${name}.desktop
+}

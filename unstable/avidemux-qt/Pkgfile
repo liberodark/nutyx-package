@@ -1,0 +1,17 @@
+ # Depends on: xorg-libxkbfile, git, ctags, electron, , qtbase, x264, x265, alsa-lib
+ 
+description="A hackable text editor for the 21st Century"
+packager="liberodark"
+url="https://atom.io/"
+
+name=avidemux-qt
+version=2.7.1
+
+source=(https://github.com/atom/atom/releases/download/v${version}/atom-amd64.deb)
+
+build() {
+
+ar x atom-amd64.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
+}
