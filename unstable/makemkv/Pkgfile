@@ -1,4 +1,4 @@
- # Depends on: ffmpeg, hicolor-icon-theme, icu, libxkbcommon-x11, qt5-base
+ # Depends on: ffmpeg, hicolor-icon-theme, icu, libxkbcommon, qtbase
  
 description="DVD and Blu-ray to MKV converter and network streamer"
 packager="liberodark"
