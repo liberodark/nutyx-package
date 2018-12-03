@@ -1,0 +1,17 @@
+ # Depends on: 
+ 
+description="Keeper is the world's #1 most downloaded password keeper and secure digital vault for protecting and managing your passwords."
+packager="liberodark"
+url="https://keepersecurity.com"
+
+name=keeper-password-manager
+version=14.0.5
+
+source=(https://keepersecurity.com/desktop_electron/Linux/repo/deb/keeperpasswordmanager_${version}_amd64.deb)
+
+build() {
+
+ar x keeperpasswordmanager_${version}_amd64.deb
+tar xvf data.tar.xz
+cp -r usr $PKG
+}
